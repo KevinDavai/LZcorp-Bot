@@ -1,0 +1,6 @@
+{
+  "error": {
+    "unspecified": "An unspecified error occurred.",
+    "clientLogin": "An error occurred while the client attempted to login."
+  }
+}
