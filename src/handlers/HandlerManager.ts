@@ -1,6 +1,7 @@
 import { glob } from "glob";
 import path from "path";
-import { Base, ClientEvents } from "discord.js";
+import { ClientEvents } from "discord.js";
+import { pathToFileURL } from "url";
 import { CustomClient } from "../structures/CustomClient";
 import { BaseEvent } from "../structures/BaseEvent";
 import { Logger } from "../services/Logger";
@@ -12,48 +13,49 @@ export class HandlerManager {
     this.client = client;
   }
 
-  public loadHandlers(): void {
-    this.loadEvents().catch((err) => Logger.error("", err));
+  public async loadHandlers(): Promise<void> {
+    Logger.info(this.client.lang.info.loadingEvents);
+    await this.loadEvents();
   }
 
   private async loadEvents(): Promise<void> {
-    const absolutePath = path.resolve(__dirname, "../.."); // Chemin absolu jusqu'au répertoire parent du répertoire du script en cours
+    const eventsDir = path.resolve(__dirname, "../events");
 
-    const files = (await glob("src/events/**/*.ts")).map(
-      (filePath) =>
-        `file:///${absolutePath.replace(/\\/g, "/")}/${filePath.replace(/\\/g, "/")}`,
-    );
+    const files = await glob(`${eventsDir}/**/*.{ts,js}`);
 
-    await Promise.all(
-      files.map(async (file: string) => {
-        const importedModule = await import(file);
+    await Promise.all(files.map((file) => this.loadEventFile(file)));
+  }
 
-        // Parcourir chaque clé du module importé
-        Object.keys(importedModule).forEach((key) => {
-          // Récupérer la classe exportée correspondant à la clé actuelle
-          const ExportedClass = importedModule[key];
+  private async loadEventFile(file: string): Promise<void> {
+    try {
+      const filePath = file.replace(/\\/g, "/");
 
-          // Vérifier si la classe est une sous-classe de BaseEvent
-          if (ExportedClass.prototype instanceof BaseEvent) {
-            // Créer une instance de la classe avec le client actuel
-            const event: BaseEvent = new ExportedClass(this.client);
+      const importedModule = await import(`@events/../../${filePath}`);
 
-            if (!event.name) {
-              delete require.cache[require.resolve(file)];
-              Logger.error(`${file.split("/").pop()} doesn't have a name`);
-              return;
-            }
+      Object.keys(importedModule).forEach((key) => {
+        const ExportedClass = importedModule[key];
 
-            const execute = (...args: any) => event.execute(...args);
+        if (ExportedClass.prototype instanceof BaseEvent) {
+          const event: BaseEvent = new ExportedClass(this.client);
 
-            const eventName: keyof ClientEvents =
-              event.name as keyof ClientEvents;
+          const execute = (...args: any) => event.execute(...args);
+          const eventName: keyof ClientEvents =
+            event.name as keyof ClientEvents;
 
-            if (event.once) this.client.once(eventName, execute);
-            else this.client.on(eventName, execute);
-          }
-        });
-      }),
-    );
+          if (event.once) this.client.once(eventName, execute);
+          else this.client.on(eventName, execute);
+
+          Logger.info(
+            this.client.lang.info.loadedEvent.replace("{event}", event.name),
+          );
+        }
+      });
+    } catch (error) {
+      const errorMessage = this.client.lang.error.loadEventFile.replace(
+        "{file}",
+        file,
+      );
+      Logger.error(errorMessage, error);
+    }
   }
 }

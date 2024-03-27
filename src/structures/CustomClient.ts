@@ -4,26 +4,48 @@ import { Logger } from "../services/Logger";
 import Logs from "../lang/logs.json";
 import { HandlerManager } from "../handlers/HandlerManager";
 import Config from "../configs/config.json";
+import { JobService } from "../services/JobService";
 
 export class CustomClient extends Client {
-  private readonly handlerManager: HandlerManager;
+  private readonly _handlerManager: HandlerManager;
+
+  private readonly _lang: typeof Logs;
+
+  private readonly _jobService: JobService;
 
   public constructor() {
     super({
       partials: [Partials.Message, Partials.Channel, Partials.Reaction],
-      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+      intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+      ],
     });
 
     dotenv.config();
 
-    this.handlerManager = new HandlerManager(this);
+    this._handlerManager = new HandlerManager(this);
+    this._jobService = new JobService(this);
+    this._lang = Logs;
   }
 
   public async start(): Promise<void> {
-    this.handlerManager.loadHandlers();
+    Logger.info(Logs.info.startingClient);
 
-    this.login(process.env.DISCORD_TOKEN).catch((err) =>
-      Logger.error(Logs.error.clientLogin, err),
-    );
+    await this._handlerManager.loadHandlers();
+    await this._jobService.loadJobs();
+
+    this.login(process.env.DISCORD_TOKEN)
+      .then(() => Logger.info(Logs.info.clientLogin))
+      .catch((err) => Logger.error(Logs.error.clientLogin, err));
+  }
+
+  public get lang() {
+    return this._lang;
+  }
+
+  public get jobService() {
+    return this._jobService;
   }
 }

@@ -14,6 +14,6 @@ export class MessageCreate extends BaseEvent {
 
   execute(message: Message) {
     this.client.channels.cache.last();
-    Logger.info(`msg: ${message}`);
+    Logger.info(`msg: ${message.content}`);
   }
 }

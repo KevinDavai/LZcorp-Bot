@@ -2,7 +2,7 @@ import { Events } from "discord.js";
 import { EventOptions } from "../@types/EventOptions";
 import { CustomClient } from "./CustomClient";
 
-export class BaseEvent {
+export abstract class BaseEvent {
   client: CustomClient;
 
   name: Events;
@@ -18,6 +18,5 @@ export class BaseEvent {
     this.once = options.once;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  execute(...args: any): void {}
+  abstract execute(...args: any): void;
 }

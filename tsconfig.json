@@ -11,6 +11,11 @@
     "strict": true,
     "strictNullChecks": true,
     "skipLibCheck": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@events/*": ["events/*"],
+      "@jobs/*": ["jobs/*"]
+    }
   }
 }

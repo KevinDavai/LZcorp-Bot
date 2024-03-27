@@ -8,4 +8,8 @@ async function start() {
   await customClient.start();
 }
 
+process.on("unhandledRejection", (reason, _promise) => {
+  Logger.error(Logs.error.unhandledRejection, reason);
+});
+
 start().catch((err) => Logger.error(Logs.error.unspecified, err));

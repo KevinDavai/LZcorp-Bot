@@ -1,6 +1,19 @@
 {
+  "info": {
+    "startingClient": "Starting client...\n",
+    "clientLogin": "Client log in successfully.\n",
+    "loadingEvents": "Starting to load events...",
+    "loadedEvent": "Event \"{event}\" loaded successfully.",
+    "loadingJobs": "Starting to load jobs...",
+    "jobRun": "Running job \"{job}\".",
+    "jobSuccess": "Job \"{job}\" completed.\n"
+  },
   "error": {
     "unspecified": "An unspecified error occurred.",
-    "clientLogin": "An error occurred while the client attempted to login."
+    "unhandledRejection": "An unhandled promise rejection occurred.",
+    "clientLogin": "An error occurred while the client attempted to login.",
+    "loadEventFile": "Failed to load event file: {file}",
+    "eventNameMissing": "Failed to load event file: {file} because the event name is missing.",
+    "job": "An error occurred while running the \"{job}\" job."
   }
 }

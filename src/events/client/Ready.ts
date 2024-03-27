@@ -3,7 +3,7 @@ import { CustomClient } from "../../structures/CustomClient";
 import { BaseEvent } from "../../structures/BaseEvent";
 import { Logger } from "../../services/Logger";
 
-class Ready extends BaseEvent {
+export class Ready extends BaseEvent {
   constructor(client: CustomClient) {
     super(client, {
       name: Events.ClientReady,
@@ -13,9 +13,6 @@ class Ready extends BaseEvent {
   }
 
   execute() {
-    this.client.channels.cache.last();
-    Logger.info("readyyyy");
+    this.client.jobService.startJobs();
   }
 }
-
-export { Ready };
