@@ -6,12 +6,15 @@
     "loadedEvent": "Event \"{event}\" loaded successfully.",
     "loadingJobs": "Starting to load jobs...",
     "jobRun": "Running job \"{job}\".",
-    "jobSuccess": "Job \"{job}\" completed.\n"
+    "jobSuccess": "Job \"{job}\" completed.\n",
+    "mongodbTryConnect": "Trying to connect to MongoDB...",
+    "mongodbConnected": "Connected to MongoDB successfully.\n"
   },
   "error": {
     "unspecified": "An unspecified error occurred.",
     "unhandledRejection": "An unhandled promise rejection occurred.",
     "clientLogin": "An error occurred while the client attempted to login.",
+    "mongodbConnection": "An error occurred while connecting to the MongoDB database.",
     "loadEventFile": "Failed to load event file: {file}",
     "eventNameMissing": "Failed to load event file: {file} because the event name is missing.",
     "job": "An error occurred while running the \"{job}\" job."

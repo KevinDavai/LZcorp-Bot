@@ -16,6 +16,7 @@
     "paths": {
       "@events/*": ["events/*"],
       "@jobs/*": ["jobs/*"]
-    }
+    },
+    "typeRoots": ["./@types/global.d.ts", "./node_modules/@types"]
   }
 }

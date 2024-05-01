@@ -1,3 +1,4 @@
+import { connection } from "mongoose";
 import { CustomClient } from "./structures/CustomClient";
 import { Logger } from "./services/Logger";
 import Logs from "./lang/logs.json";

@@ -17,6 +17,7 @@
     "dotenv": "^16.4.5",
     "glob": "^10.3.10",
     "mongodb": "^6.5.0",
+    "mongoose": "^8.2.4",
     "node-schedule": "^2.1.1",
     "pino": "^8.19.0",
     "pino-pretty": "^11.0.0"
