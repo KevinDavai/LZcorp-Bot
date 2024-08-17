@@ -1,4 +1,11 @@
-import { Client, ClientOptions, GatewayIntentBits, Partials } from "discord.js";
+import {
+  ApplicationCommand,
+  Client,
+  ClientOptions,
+  Collection,
+  GatewayIntentBits,
+  Partials,
+} from "discord.js";
 import dotenv from "dotenv";
 import { connect, connection } from "mongoose";
 import { Logger } from "../services/Logger";

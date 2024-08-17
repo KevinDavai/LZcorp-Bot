@@ -3,20 +3,26 @@
     "startingClient": "Starting client...\n",
     "clientLogin": "Client log in successfully.\n",
     "loadingEvents": "Starting to load events...",
-    "loadedEvent": "Event \"{event}\" loaded successfully.",
+    "loadingCommands": "Starting to load commands...",
+    "loadedEvent": "Event \"{0}\" loaded successfully.",
+    "loadedCmd": "Command \"{0}\" loaded successfully.",
     "loadingJobs": "Starting to load jobs...",
-    "jobRun": "Running job \"{job}\".",
-    "jobSuccess": "Job \"{job}\" completed.\n",
+    "jobRun": "Running job \"{0}\".",
+    "jobSuccess": "Job \"{0}\" completed.\n",
     "mongodbTryConnect": "Trying to connect to MongoDB...",
-    "mongodbConnected": "Connected to MongoDB successfully.\n"
+    "mongodbConnected": "Connected to MongoDB successfully.\n",
+    "newGuild": "New guild joined: {0} ({1})",
+    "deleteGuild": "Guild left: {0} ({1})"
   },
   "error": {
     "unspecified": "An unspecified error occurred.",
     "unhandledRejection": "An unhandled promise rejection occurred.",
     "clientLogin": "An error occurred while the client attempted to login.",
     "mongodbConnection": "An error occurred while connecting to the MongoDB database.",
-    "loadEventFile": "Failed to load event file: {file}",
-    "eventNameMissing": "Failed to load event file: {file} because the event name is missing.",
-    "job": "An error occurred while running the \"{job}\" job."
+    "loadEventFile": "Failed to load event file: {0}, error: {1}",
+    "eventNameMissing": "Failed to load event file: {0} because the event name is missing.",
+    "job": "An error occurred while running the \"{0}\" job.",
+    "noCommand": "No command matching {0} was found.",
+    "commandError": "An error occurred while running the \"{0}\" command."
   }
 }

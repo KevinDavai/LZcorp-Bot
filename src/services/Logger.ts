@@ -17,35 +17,50 @@ const logger = pino(
 );
 
 export class Logger {
-  static info(message: string, obj?: any): void {
-    logger.info(obj ? { message, obj } : message);
+  static info(message: string, ...params: any[]): void {
+    const formattedMessage = Logger.formatMessage(message, params);
+    logger.info(formattedMessage);
   }
 
-  static warn(message: string, obj?: any): void {
-    logger.warn(obj ? { message, obj } : message);
+  static warn(message: string, ...params: any[]): void {
+    const formattedMessage = Logger.formatMessage(message, params);
+    logger.warn(formattedMessage);
   }
 
-  public static error(message: string, obj?: any): void {
-    if (!obj) {
-      logger.error(message);
-      return;
-    }
+  static error(message: string, ...params: any[]): void {
+    const errorParam = params.pop();
+    const formattedMessage = Logger.formatMessage(message, params);
 
-    if (typeof obj === "string") {
-      logger.child({ message: obj }).error(message);
-    } else if (obj instanceof DiscordAPIError) {
-      logger
-        .child({
-          message: obj.message,
-          code: obj.code,
-          statusCode: obj.status,
-          method: obj.method,
-          url: obj.url,
-          stack: obj.stack,
-        })
-        .error(message);
+    if (errorParam instanceof Error || errorParam instanceof DiscordAPIError) {
+      const errorDetails = Logger.formatErrorDetails(errorParam);
+      logger.error({ ...errorDetails, message: formattedMessage });
     } else {
-      logger.error(obj, message);
+      logger.error({ message: formattedMessage, error: errorParam });
     }
+  }
+
+  private static formatMessage(message: string, params: any[]): string {
+    return params.reduce((msg, param, index) => {
+      const placeholder = `{${index}}`;
+      return msg.replace(placeholder, param);
+    }, message);
+  }
+
+  private static formatErrorDetails(error: Error | DiscordAPIError) {
+    if (error instanceof DiscordAPIError) {
+      return {
+        errorMessage: error.message,
+        code: error.code,
+        statusCode: error.status,
+        method: error.method,
+        url: error.url,
+        stack: error.stack,
+      };
+    }
+
+    return {
+      errorMessage: error.message,
+      stack: error.stack,
+    };
   }
 }

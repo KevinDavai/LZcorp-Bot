@@ -1,7 +1,6 @@
 import { glob } from "glob";
 import path from "path";
-import { ClientEvents } from "discord.js";
-import { pathToFileURL } from "url";
+import { ClientEvents, Events, REST, Routes } from "discord.js";
 import { CustomClient } from "../structures/CustomClient";
 import { BaseEvent } from "../structures/BaseEvent";
 import { Logger } from "../services/Logger";
@@ -14,11 +13,56 @@ export class HandlerManager {
   }
 
   public async loadHandlers(): Promise<void> {
-    Logger.info(this.client.lang.info.loadingEvents);
     await this.loadEvents();
+    await this.loadCmd();
+  }
+
+  private async loadCmd(): Promise<void> {
+    Logger.info(this.client.lang.info.loadingCommands);
+
+    const cmdDir = path.resolve(__dirname, "../commands");
+
+    const files = await glob(`${cmdDir}/**/*.{ts,js}`);
+
+    await Promise.all(files.map((file) => this.loadCmdFile(file)));
+  }
+
+  private async loadCmdFile(file: string): Promise<void> {
+    try {
+      const filePath = file.replace(/\\/g, "/");
+
+      const importedModule = await import(`@commands/../../${filePath}`);
+
+      await Object.keys(importedModule).forEach((key) => {
+        const ExportedClass = importedModule[key];
+
+        if (ExportedClass.prototype instanceof BaseCmd) {
+          const command: BaseCmd = new ExportedClass(this.client);
+
+          this.client.commands.set(command.name, command);
+
+          Logger.info(this.client.lang.info.loadedCmd, command.name);
+        }
+      });
+
+      const rest = new REST().setToken(process.env.DISCORD_TOKEN as string);
+
+      try {
+        const data = await rest.put(
+          Routes.applicationCommands(process.env.DISCORD_CLIENT_ID),
+          { body: this.client.commands },
+        );
+      } catch (error) {
+        Logger.error(this.client.lang.error.loadEventFile, error);
+      }
+    } catch (error) {
+      Logger.error(this.client.lang.error.loadEventFile, file, error);
+    }
   }
 
   private async loadEvents(): Promise<void> {
+    Logger.info(this.client.lang.info.loadingEvents);
+
     const eventsDir = path.resolve(__dirname, "../events");
 
     const files = await glob(`${eventsDir}/**/*.{ts,js}`);
@@ -42,20 +86,18 @@ export class HandlerManager {
           const eventName: keyof ClientEvents =
             event.name as keyof ClientEvents;
 
+          if (!Object.values(Events).includes(eventName as Events)) {
+            throw new Error(`Invalid event name: ${eventName}`);
+          }
+
           if (event.once) this.client.once(eventName, execute);
           else this.client.on(eventName, execute);
 
-          Logger.info(
-            this.client.lang.info.loadedEvent.replace("{event}", event.name),
-          );
+          Logger.info(this.client.lang.info.loadedEvent, event.name);
         }
       });
     } catch (error) {
-      const errorMessage = this.client.lang.error.loadEventFile.replace(
-        "{file}",
-        file,
-      );
-      Logger.error(errorMessage, error);
+      Logger.error(this.client.lang.error.loadEventFile, file, error);
     }
   }
 }

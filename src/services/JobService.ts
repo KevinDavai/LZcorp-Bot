@@ -23,23 +23,16 @@ export class JobService {
       schedule.scheduleJob(jobSchedule, async () => {
         try {
           if (job.log) {
-            Logger.info(
-              this._client.lang.info.jobRun.replace("{job}", job.name),
-            );
+            Logger.info(this._client.lang.info.jobRun, job.name);
           }
 
           await job.execute();
 
           if (job.log) {
-            Logger.info(
-              this._client.lang.info.jobSuccess.replace("{job}", job.name),
-            );
+            Logger.info(this._client.lang.info.jobSuccess, job.name);
           }
         } catch (error) {
-          Logger.error(
-            this._client.lang.error.job.replace("{job}", job.name),
-            error,
-          );
+          Logger.error(this._client.lang.error.job, job.name, error);
         }
       });
     });
