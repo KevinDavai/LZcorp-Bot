@@ -13,6 +13,7 @@ import Logs from "../lang/logs.json";
 import { HandlerManager } from "../handlers/HandlerManager";
 import Config from "../configs/config.json";
 import { JobService } from "../services/JobService";
+import { BaseCommand } from "./BaseCommand";
 
 export class CustomClient extends Client {
   private readonly _handlerManager: HandlerManager;
@@ -20,6 +21,12 @@ export class CustomClient extends Client {
   private readonly _lang: typeof Logs;
 
   private readonly _jobService: JobService;
+
+  private readonly _commands: Collection<string, BaseCommand>;
+
+  private readonly _cooldowns: Collection<string, Collection<string, number>>;
+
+  private readonly _ongoingCommands: Collection<string, BaseCommand>;
 
   public constructor() {
     super({
@@ -36,6 +43,9 @@ export class CustomClient extends Client {
     this._handlerManager = new HandlerManager(this);
     this._jobService = new JobService(this);
     this._lang = Logs;
+    this._commands = new Collection();
+    this._cooldowns = new Collection();
+    this._ongoingCommands = new Collection();
   }
 
   public async start(): Promise<void> {
@@ -68,5 +78,17 @@ export class CustomClient extends Client {
 
   public get jobService() {
     return this._jobService;
+  }
+
+  public get commands() {
+    return this._commands;
+  }
+
+  public get cooldown() {
+    return this._cooldowns;
+  }
+
+  public get ongoingCommands() {
+    return this._ongoingCommands;
   }
 }

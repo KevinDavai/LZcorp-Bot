@@ -1,6 +1,13 @@
 import { glob } from "glob";
 import path from "path";
-import { ClientEvents, Events, REST, Routes } from "discord.js";
+import {
+  ClientEvents,
+  Events,
+  REST,
+  RESTPutAPIApplicationCommandsJSONBody,
+  Routes,
+} from "discord.js";
+import { BaseCommand } from "structures/BaseCommand";
 import { CustomClient } from "../structures/CustomClient";
 import { BaseEvent } from "../structures/BaseEvent";
 import { Logger } from "../services/Logger";
@@ -25,6 +32,17 @@ export class HandlerManager {
     const files = await glob(`${cmdDir}/**/*.{ts,js}`);
 
     await Promise.all(files.map((file) => this.loadCmdFile(file)));
+
+    // const rest = new REST().setToken(process.env.DISCORD_TOKEN as string);
+
+    // try {
+    //   const data = (await rest.put(
+    //     Routes.applicationCommands(process.env.DISCORD_CLIENT_ID),
+    //     { body: this.client.commands.map((cmd) => cmd.data) },
+    //   )) as RESTPutAPIApplicationCommandsJSONBody[];
+    // } catch (error) {
+    //   Logger.error(this.client.lang.error.loadCommandAPI, error);
+    // }
   }
 
   private async loadCmdFile(file: string): Promise<void> {
@@ -36,25 +54,14 @@ export class HandlerManager {
       await Object.keys(importedModule).forEach((key) => {
         const ExportedClass = importedModule[key];
 
-        if (ExportedClass.prototype instanceof BaseCmd) {
-          const command: BaseCmd = new ExportedClass(this.client);
+        if (ExportedClass.prototype instanceof BaseCommand) {
+          const command: BaseCommand = new ExportedClass(this.client);
 
-          this.client.commands.set(command.name, command);
+          this.client.commands.set(command.data.name, command);
 
-          Logger.info(this.client.lang.info.loadedCmd, command.name);
+          Logger.info(this.client.lang.info.loadedCmd, command.data.name);
         }
       });
-
-      const rest = new REST().setToken(process.env.DISCORD_TOKEN as string);
-
-      try {
-        const data = await rest.put(
-          Routes.applicationCommands(process.env.DISCORD_CLIENT_ID),
-          { body: this.client.commands },
-        );
-      } catch (error) {
-        Logger.error(this.client.lang.error.loadEventFile, error);
-      }
     } catch (error) {
       Logger.error(this.client.lang.error.loadEventFile, file, error);
     }

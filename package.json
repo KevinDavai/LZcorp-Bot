@@ -14,6 +14,8 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/builders": "^1.8.2",
+    "@sapphire/shapeshift": "^4.0.0",
+    "date-fns": "^3.6.0",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
     "glob": "^10.3.10",

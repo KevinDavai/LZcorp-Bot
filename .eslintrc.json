@@ -22,7 +22,10 @@
     "import/no-cycle": "off",
     "import/prefer-default-export": "off",
     "no-underscore-dangle": "off",
-    "class-methods-use-this": "off"
+    "class-methods-use-this": "off",
+    "prefer-template": "off",
+    "max-classes-per-file": "off",
+    "@typescript-eslint/no-use-before-define": "off"
   },
 
   "env": {

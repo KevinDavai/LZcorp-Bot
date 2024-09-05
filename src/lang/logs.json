@@ -23,6 +23,7 @@
     "eventNameMissing": "Failed to load event file: {0} because the event name is missing.",
     "job": "An error occurred while running the \"{0}\" job.",
     "noCommand": "No command matching {0} was found.",
-    "commandError": "An error occurred while running the \"{0}\" command."
+    "commandError": "An error occurred while running the \"{0}\" command.",
+    "loadCommandAPI": "Failed to load command via discord API"
   }
 }
