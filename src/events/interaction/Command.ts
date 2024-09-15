@@ -21,8 +21,23 @@ export class CommandEvent extends BaseEvent {
   }
 
   async execute(interaction: Interaction) {
+    if (interaction.isAutocomplete()) {
+      const command = this.client.commands.get(interaction.commandName);
+
+      if (command?.autocomplete) {
+        try {
+          await command.autocomplete(interaction);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    }
+
     if (!interaction.isCommand()) return;
     if (!interaction.inCachedGuild()) return;
+    if (!interaction.guild) {
+      return;
+    }
 
     const command = this.client.commands.get(interaction.commandName);
 
@@ -30,30 +45,39 @@ export class CommandEvent extends BaseEvent {
       return;
     }
 
-    const userId = interaction.user.id;
+    if (interaction instanceof ChatInputCommandInteraction) {
+      const subcommand = interaction.options.getSubcommand(false);
+      const subcommandConfig = subcommand
+        ? command.subcommands?.[subcommand]
+        : undefined;
 
-    if (command.max && this.client.ongoingCommands.has(userId)) {
-      await sendErrorEmbedWithCountdown(
-        interaction as ChatInputCommandInteraction,
-        [
-          "Vous avez déjà une creation de profil en cours. \nVeuillez annuler ou terminer la création de profil en cours avant de continuer.",
-        ],
-      );
-      return;
-    }
+      if (subcommandConfig && subcommandConfig.max !== undefined) {
+        const userId = interaction.user.id;
 
-    if (command.max) {
-      this.client.ongoingCommands.set(userId, command);
-    }
+        if (subcommandConfig.max && this.client.ongoingCommands.has(userId)) {
+          await sendErrorEmbedWithCountdown(
+            interaction as ChatInputCommandInteraction,
+            [
+              "Vous avez déjà une action en cours. Veuillez annuler ou terminer l'action en cours avant de continuer.",
+            ],
+          );
+          return;
+        }
 
-    try {
-      await command.execute(interaction);
-    } catch (error) {
-      Logger.error(
-        this.client.lang.error.commandError,
-        command.data.name,
-        error,
-      );
+        if (subcommandConfig.max) {
+          this.client.ongoingCommands.set(userId, command);
+        }
+      }
+
+      try {
+        await command.execute(interaction);
+      } catch (error) {
+        Logger.error(
+          this.client.lang.error.commandError,
+          command.data.name,
+          error,
+        );
+      }
     }
   }
 }

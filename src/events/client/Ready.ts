@@ -1,5 +1,6 @@
 import { Events } from "discord.js";
 import { checkNewGuilds } from "database/utils/GuildsUtils";
+import { checkNewInvite, GENERATEINVITE } from "database/utils/InviteUtils";
 import { CustomClient } from "../../structures/CustomClient";
 import { BaseEvent } from "../../structures/BaseEvent";
 
@@ -13,7 +14,8 @@ export class Ready extends BaseEvent {
   }
 
   async execute() {
-    this.client.jobService.startJobs();
+    await GENERATEINVITE();
     await checkNewGuilds(this.client);
+    await checkNewInvite(this.client);
   }
 }

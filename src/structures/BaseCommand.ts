@@ -1,4 +1,5 @@
 import {
+  AutocompleteInteraction,
   CommandInteraction,
   RESTPostAPIApplicationCommandsJSONBody,
   RESTPostAPIApplicationGuildCommandsJSONBody,
@@ -17,14 +18,21 @@ export abstract class BaseCommand {
 
   cooldown?: number;
 
-  max?: number;
+  subcommands?: Record<
+    string,
+    {
+      max?: number; // Max limit for this subcommand
+      // Other subcommand-specific properties
+    }
+  >;
 
   constructor(client: CustomClient, options: CommandOptions) {
     this.client = client;
     this.data = options.data;
     this.cooldown = options.cooldown;
-    this.max = options.max;
+    this.subcommands = options.subcommands;
   }
 
   abstract execute(interaction: CommandInteraction): Promise<void> | void;
+  autocomplete?(interaction: AutocompleteInteraction): Promise<void> | void;
 }

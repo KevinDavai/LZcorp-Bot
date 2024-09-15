@@ -3,5 +3,10 @@ export type CommandOptions = {
     | RESTPostAPIApplicationCommandsJSONBody
     | RESTPostAPIApplicationGuildCommandsJSONBody;
   cooldown?: number;
-  max?: number;
+  subcommands?: Record<
+    string,
+    {
+      max?: number; // Max limit for this subcommand
+    }
+  >;
 };

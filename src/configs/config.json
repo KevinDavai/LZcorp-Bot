@@ -4,6 +4,8 @@
       "Guilds",
       "GuildMessages",
       "GuildMessageReactions",
+      "GuildMembers",
+      "GuildPresences",
       "DirectMessages",
       "DirectMessageReactions"
     ],
