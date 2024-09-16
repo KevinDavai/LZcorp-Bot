@@ -14,7 +14,6 @@ export class Ready extends BaseEvent {
   }
 
   async execute() {
-    await GENERATEINVITE();
     await checkNewGuilds(this.client);
     await checkNewInvite(this.client);
   }

@@ -11,7 +11,7 @@ export abstract class BaseJobs {
 
   description: string;
 
-  schedule: string;
+  schedule: string | Date;
 
   constructor(client: CustomClient, options: JobOptions) {
     this.client = client;

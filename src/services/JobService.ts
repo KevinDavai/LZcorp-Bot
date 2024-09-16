@@ -18,7 +18,7 @@ export class JobService {
 
   public async startJobs(): Promise<void> {
     this._jobs.forEach((job: BaseJobs) => {
-      const jobSchedule: string = job.schedule;
+      const jobSchedule = job.schedule;
 
       schedule.scheduleJob(jobSchedule, async () => {
         try {
@@ -36,6 +36,42 @@ export class JobService {
         }
       });
     });
+  }
+
+  public async addJob(job: BaseJobs): Promise<void> {
+    this._jobs.push(job);
+
+    const jobSchedule = job.schedule;
+
+    schedule.scheduleJob(job.name, jobSchedule, async () => {
+      try {
+        if (job.log) {
+          Logger.info(this._client.lang.info.jobRun, job.name);
+        }
+
+        await job.execute();
+
+        if (job.log) {
+          Logger.info(this._client.lang.info.jobSuccess, job.name);
+        }
+      } catch (error) {
+        Logger.error(this._client.lang.error.job, job.name, error);
+      }
+    });
+  }
+
+  public async deleteJob(jobName: string): Promise<void> {
+    const job = this._jobs.find((j) => j.name === jobName);
+
+    if (!job) {
+      return;
+    }
+
+    this._jobs = this._jobs.filter((j) => j.name !== jobName);
+
+    const jobToCancel = schedule.scheduledJobs[jobName];
+
+    jobToCancel.cancel();
   }
 
   public async stopJobs(): Promise<void> {

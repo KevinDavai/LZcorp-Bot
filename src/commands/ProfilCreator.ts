@@ -61,7 +61,6 @@ export class ProfilCreator extends BaseCommand {
             .setRequired(true),
         ),
       cooldown: 1000,
-      max: 1,
     });
   }
 
@@ -265,7 +264,6 @@ export class ProfilCreator extends BaseCommand {
             newPage = newCurrentPage;
             newEmbed = newEmbeds;
 
-            console.log(newPage);
             break;
           }
           case "prev-page":
