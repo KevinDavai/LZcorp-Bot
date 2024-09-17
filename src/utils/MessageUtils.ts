@@ -8,13 +8,18 @@ import {
   Guild,
   Role,
   GuildMember,
+  ButtonInteraction,
 } from "discord.js";
 import { Logger } from "services/Logger";
 import { CustomClient } from "structures/CustomClient";
 import Logs from "../lang/logs.json";
 
 export async function sendErrorEmbedWithCountdown(
-  interaction: ModalSubmitInteraction | ChatInputCommandInteraction,
+  interaction:
+    | ModalSubmitInteraction
+    | ChatInputCommandInteraction
+    | CommandInteraction
+    | ButtonInteraction,
 
   errors: string[],
 ): Promise<void> {
@@ -56,7 +61,8 @@ export async function sendValidEmbedWithCountdown(
   interaction:
     | ModalSubmitInteraction
     | ChatInputCommandInteraction
-    | CommandInteraction,
+    | CommandInteraction
+    | ButtonInteraction,
   messages: string[],
   edit?: boolean,
 ): Promise<void> {
@@ -102,22 +108,42 @@ export async function sendValidEmbedWithCountdown(
 }
 
 export async function getOrFetchChannelById(
-  client: CustomClient,
+  clientOrGuild: CustomClient | Guild, // Le paramètre peut être un `CustomClient` ou un `Guild`
   channelId: string,
 ): Promise<Channel | undefined> {
-  let channel = client.channels.cache.get(channelId);
+  let channel;
 
-  if (!channel) {
-    // Le canal n'est pas dans le cache, on va donc le récupérer depuis l'API Discord
-    try {
-      const fetchedChannel = await client.channels.fetch(channelId);
-      if (fetchedChannel) {
-        channel = fetchedChannel;
-      } else {
-        Logger.error(Logs.error.channelByIdNotFound, channelId);
+  if (clientOrGuild instanceof Guild) {
+    // Si le premier paramètre est une instance de Guild
+    channel = clientOrGuild.channels.cache.get(channelId);
+
+    if (!channel) {
+      try {
+        const fetchedChannel = await clientOrGuild.channels.fetch(channelId);
+        if (fetchedChannel) {
+          channel = fetchedChannel;
+        } else {
+          Logger.error(Logs.error.channelByIdNotFound, channelId);
+        }
+      } catch (error) {
+        Logger.error(Logs.error.fetchChannelById, channelId, error);
       }
-    } catch (error) {
-      Logger.error(Logs.error.fetchChannelById, channelId, error);
+    }
+  } else if (clientOrGuild instanceof CustomClient) {
+    // Si le premier paramètre est une instance de CustomClient
+    channel = clientOrGuild.channels.cache.get(channelId);
+
+    if (!channel) {
+      try {
+        const fetchedChannel = await clientOrGuild.channels.fetch(channelId);
+        if (fetchedChannel) {
+          channel = fetchedChannel;
+        } else {
+          Logger.error(Logs.error.channelByIdNotFound, channelId);
+        }
+      } catch (error) {
+        Logger.error(Logs.error.fetchChannelById, channelId, error);
+      }
     }
   }
 

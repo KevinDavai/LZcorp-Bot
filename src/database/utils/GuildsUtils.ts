@@ -134,6 +134,94 @@ export async function setSuggestionChannel(guild: Guild, channelId: string) {
   }
 }
 
+export async function setAntiLink(guild: Guild, state: boolean) {
+  const client = guild.client as CustomClient;
+
+  try {
+    await GuildModel.updateOne(
+      { _id: guild.id },
+      { $set: { antilink: state } },
+    );
+
+    const cachedGuild = guildCache.get<CustomGuild>(guild.id);
+
+    if (cachedGuild) {
+      cachedGuild.antilink = state;
+      guildCache.set(guild.id, cachedGuild);
+    }
+
+    Logger.info(client.lang.info.antiLinkUpdate, guild.id);
+  } catch (error) {
+    Logger.error(client.lang.error.antiLinkUpdate, guild.id, error);
+  }
+}
+
+export async function setAntiSpam(guild: Guild, state: boolean) {
+  const client = guild.client as CustomClient;
+
+  try {
+    await GuildModel.updateOne(
+      { _id: guild.id },
+      { $set: { antispam: state } },
+    );
+
+    const cachedGuild = guildCache.get<CustomGuild>(guild.id);
+
+    if (cachedGuild) {
+      cachedGuild.antispam = state;
+      guildCache.set(guild.id, cachedGuild);
+    }
+
+    Logger.info(client.lang.info.antiSpamUpdate, guild.id);
+  } catch (error) {
+    Logger.error(client.lang.error.antiSpamUpdate, guild.id, error);
+  }
+}
+
+export async function setAntiBadWord(guild: Guild, state: boolean) {
+  const client = guild.client as CustomClient;
+
+  try {
+    await GuildModel.updateOne(
+      { _id: guild.id },
+      { $set: { antibadwords: state } },
+    );
+
+    const cachedGuild = guildCache.get<CustomGuild>(guild.id);
+
+    if (cachedGuild) {
+      cachedGuild.antibadwords = state;
+      guildCache.set(guild.id, cachedGuild);
+    }
+
+    Logger.info(client.lang.info.antiBadWordUpdate, guild.id);
+  } catch (error) {
+    Logger.error(client.lang.error.antiBadWordUpdate, guild.id, error);
+  }
+}
+
+export async function setAntiMassMention(guild: Guild, state: boolean) {
+  const client = guild.client as CustomClient;
+
+  try {
+    await GuildModel.updateOne(
+      { _id: guild.id },
+      { $set: { antimassmentions: state } },
+    );
+
+    const cachedGuild = guildCache.get<CustomGuild>(guild.id);
+
+    if (cachedGuild) {
+      cachedGuild.antimassmentions = state;
+      guildCache.set(guild.id, cachedGuild);
+    }
+
+    Logger.info(client.lang.info.antiMassMentionUpdate, guild.id);
+  } catch (error) {
+    Logger.error(client.lang.error.antiMassMentionUpdate, guild.id, error);
+  }
+}
+
 export async function setBlackListChannel(guild: Guild, channelId: string) {
   const client = guild.client as CustomClient;
 
@@ -233,7 +321,46 @@ export async function upsertRoleForLevel(
     } else {
       Logger.info(Logs.info.editLevelRole, guildId, level, roleId);
     }
+
+    guildCache.del(guildId); // Supprime la guilde du cache
   } catch (error) {
     Logger.error(Logs.error.newOrEditRole, guildId, level, roleId, error);
+  }
+}
+
+export async function addBypassRoleToGuild(
+  guildId: string,
+  roleId: string,
+): Promise<void> {
+  try {
+    const newGuild = await GuildModel.findOneAndUpdate(
+      { _id: guildId },
+      { $addToSet: { bypass_roles: roleId } }, // Utilise $addToSet pour éviter les doublons
+      { new: true },
+    );
+
+    guildCache.set(guildId, newGuild);
+  } catch (error) {
+    Logger.error(Logs.error.addBypassRoleToGuild, guildId, roleId, error);
+    throw error;
+  }
+}
+
+export async function removeBypassRoleToGuild(
+  guildId: string,
+  roleId: string,
+): Promise<void> {
+  try {
+    // Sauvegarde dans la DB
+    const newGuild = await GuildModel.findOneAndUpdate(
+      { _id: guildId },
+      { $pull: { bypass_roles: roleId } },
+      { new: true },
+    );
+
+    guildCache.set(guildId, newGuild);
+  } catch (error) {
+    Logger.error(Logs.error.removeBypassRoleToGuild, guildId, roleId, error);
+    throw error;
   }
 }

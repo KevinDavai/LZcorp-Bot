@@ -17,6 +17,11 @@ export interface CustomGuild {
   levelup_channel_id?: string;
   blacklist_channel_id?: string;
   blacklist_role_id?: string;
+  antilink: boolean;
+  antispam: boolean;
+  antibadwords: boolean;
+  antimassmentions: boolean;
+  bypass_roles: string[];
 }
 
 // Sous-schéma pour les rôles par niveau
@@ -36,6 +41,11 @@ const guildSchema = new Schema<CustomGuild>({
   levelup_channel_id: { type: String },
   blacklist_channel_id: { type: String },
   blacklist_role_id: { type: String },
+  antilink: { type: Boolean, default: false },
+  antispam: { type: Boolean, default: false },
+  antibadwords: { type: Boolean, default: false },
+  antimassmentions: { type: Boolean, default: false },
+  bypass_roles: { type: [String], default: [] },
 });
 
 // Indexation et validation

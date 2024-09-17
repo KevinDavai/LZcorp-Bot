@@ -9,7 +9,9 @@ export interface CustomGiveaway {
   channelId: string;
   guildId: string;
   participants: string[];
-  winner: string | null;
+  winners: string[] | null;
+  nbWinners: number;
+  isEnded: boolean;
 }
 
 const giveawaySchema = new Schema<CustomGiveaway>({
@@ -19,7 +21,9 @@ const giveawaySchema = new Schema<CustomGiveaway>({
   channelId: { type: String, required: true },
   guildId: { type: String, required: true },
   participants: { type: [String], default: [] },
-  winner: { type: String, default: null },
+  winners: { type: [String], default: null },
+  nbWinners: { type: Number, default: 1 },
+  isEnded: { type: Boolean, default: false },
 });
 
 export const GiveawayModel = model<CustomGiveaway>("Giveaways", giveawaySchema);

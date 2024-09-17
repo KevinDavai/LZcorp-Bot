@@ -68,6 +68,46 @@ export async function getUserById(userId: string, guildId: string) {
   }
 }
 
+export async function addWarnToUser(
+  user: CustomUser,
+  reason: string,
+): Promise<void> {
+  try {
+    // Sauvegarde dans la DB
+    const newUser = await UserModel.findOneAndUpdate(
+      { _id: user._id, guildId: user.guildId },
+      { $push: { warnings: { id: user.warnings.length + 1, reason } } },
+      { new: true },
+    );
+
+    const cacheKey = `${user._id}-${user.guildId}`;
+    userCache.set(cacheKey, newUser);
+  } catch (error) {
+    Logger.error(Logs.error.addWarnToUser, user._id, user.guildId, error);
+    throw error;
+  }
+}
+
+export async function removeWarnToUser(
+  user: CustomUser,
+  warnId: number,
+): Promise<void> {
+  try {
+    // Sauvegarde dans la DB
+    const newUser = await UserModel.findOneAndUpdate(
+      { _id: user._id, guildId: user.guildId },
+      { $pull: { warnings: { id: warnId } } },
+      { new: true },
+    );
+
+    const cacheKey = `${user._id}-${user.guildId}`;
+    userCache.set(cacheKey, newUser);
+  } catch (error) {
+    Logger.error(Logs.error.removeWarnToUser, user._id, user.guildId, error);
+    throw error;
+  }
+}
+
 export async function setBlackListedStatus(
   userId: string,
   guildId: string,

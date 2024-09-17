@@ -26,7 +26,7 @@ export class JobService {
             Logger.info(this._client.lang.info.jobRun, job.name);
           }
 
-          await job.execute();
+          await job.execute(this._client);
 
           if (job.log) {
             Logger.info(this._client.lang.info.jobSuccess, job.name);
@@ -38,8 +38,10 @@ export class JobService {
     });
   }
 
-  public async addJob(job: BaseJobs): Promise<void> {
+  public async addJob(job: BaseJobs, startSchedule = true): Promise<void> {
     this._jobs.push(job);
+
+    if (!startSchedule) return;
 
     const jobSchedule = job.schedule;
 
@@ -96,12 +98,17 @@ export class JobService {
         const ExportedClass = importedModule[key];
 
         if (ExportedClass.prototype instanceof BaseJobs) {
-          const job: BaseJobs = new ExportedClass();
+          const job: BaseJobs = new ExportedClass(this._client);
+
           this._jobs.push(job);
         }
       });
     } catch (error) {
       Logger.error("errorMessage", error);
     }
+  }
+
+  public get jobs() {
+    return this._jobs;
   }
 }

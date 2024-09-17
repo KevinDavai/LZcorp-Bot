@@ -2,6 +2,7 @@ import { Events, Message } from "discord.js";
 import { getGuildSettings } from "database/utils/GuildsUtils";
 import { createNewSuggestion } from "modules/suggestionModule";
 import { addXP, createUser, getUserById } from "database/utils/UserUtils";
+import { antiLinkModule } from "modules/AntiLinkModule";
 import { CustomClient } from "../../structures/CustomClient";
 import { BaseEvent } from "../../structures/BaseEvent";
 import { Logger } from "../../services/Logger";
@@ -21,10 +22,15 @@ export class MessageCreate extends BaseEvent {
 
     const guildSettings = await getGuildSettings(message.guild.id);
 
+    console.log(guildSettings.antibadwords);
     if (guildSettings.suggestion_channel_id) {
       if (message.channel.id === guildSettings.suggestion_channel_id) {
         await createNewSuggestion(message, guildSettings.suggestion_channel_id);
       }
+    }
+
+    if (guildSettings.antilink) {
+      antiLinkModule(message, guildSettings);
     }
 
     const userDetail = await getUserById(message.author.id, message.guild.id);

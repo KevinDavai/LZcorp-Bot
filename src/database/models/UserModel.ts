@@ -11,7 +11,20 @@ export interface CustomUser {
   isBlackListed?: boolean;
   blackListedReason?: string;
   blackListedMessageId?: string;
+  warnings: Warning[];
 }
+
+export interface Warning {
+  id: number;
+  reason: string;
+  date?: Date;
+}
+
+const warningSchema = new Schema<Warning>({
+  id: { type: Number, required: true },
+  reason: { type: String, required: true },
+  date: { type: Date, default: Date.now },
+});
 
 const userSchema = new Schema<CustomUser>({
   _id: { type: String, required: true },
@@ -22,6 +35,7 @@ const userSchema = new Schema<CustomUser>({
   isBlackListed: { type: Boolean, default: false },
   blackListedMessageId: { type: String, default: null },
   blackListedReason: { type: String, default: null },
+  warnings: { type: [warningSchema], default: [] },
 });
 
 // Crée un index unique basé sur l'id et guildId

@@ -20,7 +20,10 @@
     "editLevelRole": "Niveau modifié avec succès pour la guilde: {0}, level: {1}, roleId: {2}",
     "blackListRoleUpdate": "Le role de blacklist a ete mis a jour pour la guild {0}",
     "blackListChannelUpdate": "Le channel de blacklist a ete mis a jour pour la guild {0}",
-    "updateInvites": "Invites updated for guild name: {0}, guild id: {1}"
+    "antiLinkUpdate": "AntiLink status updated for guild id: {0}",
+    "antiSpamUpdate": "AntiSpam status updated for guild id: {0}",
+    "antiBadWordUpdate": "AntiBadWord status updated for guild id: {0}",
+    "antiMassMentionUpdate": "AntiMassMention status updated for guild id: {0}"
   },
   "error": {
     "unspecified": "An unspecified error occurred.",
@@ -58,6 +61,22 @@
     "messageByIdNotFound": "Le message avec l'ID {0} n'a pas été trouvé.",
     "fetchMessageById": "Erreur lors de la récupération du message par l'ID {0}, error: {1}",
     "setBlacklistedStatus": "Erreur lors de la mise à jour du status de blacklist pour l'utilisateur: {0}, guild: {1}, error: {2}",
-    "getInviteByUserId": "Erreur lors de la récupération des invitations par l'ID de l'utilisateur: {0}, guild: {1}, error: {2}"
+    "getInviteByUserId": "Erreur lors de la récupération des invitations par l'ID de l'utilisateur: {0}, guild: {1}, error: {2}",
+    "banCommand": "Une erreur est survenue en tentant de bannir l'utilisateur: {0}, guild: {1}, error: {2}",
+    "unbanCommand": "Une erreur est survenue en tentant de débannir l'utilisateur: {0}, guild: {1}, error: {2}",
+    "muteCommand": "Une erreur est survenue en tentant de mute l'utilisateur: {0}, guild: {1}, error: {2}",
+    "unmuteCommand": "Une erreur est survenue en tentant de unmute l'utilisateur: {0}, guild: {1}, error: {2}",
+    "kickCommand": "Une erreur est survenue en tentant de kick l'utilisateur: {0}, guild: {1}, error: {2}",
+    "warnCommand": "Une erreur est survenue en tentant de warn l'utilisateur: {0}, guild: {1}, error: {2}",
+    "addWarnToUser": "Erreur lors de l'ajout d'un warn à l'utilisateur: {0}, guild: {1}, error: {2}",
+    "removeWarnToUser": "Erreur lors de la suppression d'un warn à l'utilisateur: {0}, guild: {1}, error: {2}",
+    "unWarnCommand": "Une erreur est survenue en tentant de unwarn l'utilisateur: {0}, guild: {1}, error: {2}",
+    "antiLinkUpdate": "Erreur lors de la mise à jour du status de l'antiLink pour la guild: {0}, error: {1}",
+    "antiSpamUpdate": "Erreur lors de la mise à jour du status de l'antiSpam pour la guild: {0}, error: {1}",
+    "antiBadWordUpdate": "Erreur lors de la mise à jour du status de l'antiBadWord pour la guild: {0}, error: {1}",
+    "antiMassMentionUpdate": "Erreur lors de la mise à jour du status de l'antiMassMention pour la guild: {0}, error: {1}",
+    "handleAntiLink": "Erreur lors de la gestion de l'antiLink pour la guild: {0}, error: {1}",
+    "removeBypassRoleToGuild": "Erreur lors de la suppression du role de bypass pour la guild: {0}, roleId: {1}, error: {2}",
+    "addBypassRoleToGuild": "Erreur lors de l'ajout du role de bypass pour la guild: {0}, roleId: {1}, error: {2}"
   }
 }

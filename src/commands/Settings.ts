@@ -8,6 +8,13 @@ import { BaseCommand } from "structures/BaseCommand";
 import { SlashCommandBuilder } from "@discordjs/builders";
 
 import {
+  addBypassRoleToGuild,
+  getGuildSettings,
+  removeBypassRoleToGuild,
+  setAntiBadWord,
+  setAntiLink,
+  setAntiMassMention,
+  setAntiSpam,
   setBlackListChannel,
   setBlackListRole,
   setLevelUpChannel,
@@ -118,6 +125,77 @@ export class Settings extends BaseCommand {
                     .setRequired(true),
                 ),
             ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("antilink")
+            .setDescription("Activer/désactiver le module antilink")
+            .addBooleanOption((option) =>
+              option
+                .setName("state")
+                .setDescription("Activer ou désactiver le module")
+                .setRequired(true),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("antispam")
+            .setDescription("Activer/désactiver le module antispam")
+            .addBooleanOption((option) =>
+              option
+                .setName("state")
+                .setDescription("Activer ou désactiver le module")
+                .setRequired(true),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("antibadword")
+            .setDescription("Activer/désactiver le module antibadword")
+            .addBooleanOption((option) =>
+              option
+                .setName("state")
+                .setDescription("Activer ou désactiver le module")
+                .setRequired(true),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("antimassmention")
+            .setDescription("Activer/désactiver le module antimassmention")
+            .addBooleanOption((option) =>
+              option
+                .setName("state")
+                .setDescription("Activer ou désactiver le module")
+                .setRequired(true),
+            ),
+        )
+        .addSubcommandGroup((subcommand) =>
+          subcommand
+            .setName("bypassrole")
+            .setDescription("Les rôles bypass")
+            .addSubcommand((sub) =>
+              sub
+                .setName("add")
+                .setDescription("Ajouter un rôle bypass")
+                .addRoleOption((option) =>
+                  option
+                    .setName("role")
+                    .setDescription("Le rôle")
+                    .setRequired(true),
+                ),
+            )
+            .addSubcommand((sub) =>
+              sub
+                .setName("remove")
+                .setDescription("Supprimer un rôle bypass")
+                .addRoleOption((option) =>
+                  option
+                    .setName("role")
+                    .setDescription("Le rôle")
+                    .setRequired(true),
+                ),
+            ),
         ),
 
       cooldown: 1000,
@@ -131,7 +209,7 @@ export class Settings extends BaseCommand {
       welcome: async () => {
         const channel = interaction.options.getChannel("channel");
         if (channel && channel.type === ChannelType.GuildText) {
-          setWelcomeChannel(interaction.guild!, channel.id);
+          await setWelcomeChannel(interaction.guild!, channel.id);
           await sendValidEmbedWithCountdown(interaction, [
             `Le channel de bienvenue est désormais ${channel}`,
           ]);
@@ -144,13 +222,69 @@ export class Settings extends BaseCommand {
       suggestion: async () => {
         const channel = interaction.options.getChannel("channel");
         if (channel && channel.type === ChannelType.GuildText) {
-          setSuggestionChannel(interaction.guild!, channel.id);
+          await setSuggestionChannel(interaction.guild!, channel.id);
           await sendValidEmbedWithCountdown(interaction, [
             `Le channel de suggestion est désormais ${channel}`,
           ]);
         } else {
           await sendErrorEmbedWithCountdown(interaction, [
             "Le channel spécifié n'est pas un channel text ou est introuvable.",
+          ]);
+        }
+      },
+      antilink: async () => {
+        const state = interaction.options.getBoolean("state");
+        if (state) {
+          await setAntiLink(interaction.guild!, true);
+          await sendValidEmbedWithCountdown(interaction, [
+            "Le module antilink est désormais activé",
+          ]);
+        } else {
+          await setAntiLink(interaction.guild!, false);
+          await sendValidEmbedWithCountdown(interaction, [
+            "Le module antilink est désormais désactivé",
+          ]);
+        }
+      },
+      antispam: async () => {
+        const state = interaction.options.getBoolean("state");
+        if (state) {
+          await setAntiSpam(interaction.guild!, true);
+          await sendValidEmbedWithCountdown(interaction, [
+            "Le module antispam est désormais activé",
+          ]);
+        } else {
+          await setAntiSpam(interaction.guild!, false);
+          await sendValidEmbedWithCountdown(interaction, [
+            "Le module antispam est désormais désactivé",
+          ]);
+        }
+      },
+      antibadword: async () => {
+        const state = interaction.options.getBoolean("state");
+        if (state) {
+          await setAntiBadWord(interaction.guild!, true);
+          await sendValidEmbedWithCountdown(interaction, [
+            "Le module antibadword est désormais activé",
+          ]);
+        } else {
+          await setAntiBadWord(interaction.guild!, false);
+          await sendValidEmbedWithCountdown(interaction, [
+            "Le module antibadword est désormais désactivé",
+          ]);
+        }
+      },
+      antimassmention: async () => {
+        const state = interaction.options.getBoolean("state");
+        if (state) {
+          await setAntiMassMention(interaction.guild!, true);
+          await sendValidEmbedWithCountdown(interaction, [
+            "Le module antimassmention est désormais activé",
+          ]);
+        } else {
+          await setAntiMassMention(interaction.guild!, false);
+          await sendValidEmbedWithCountdown(interaction, [
+            "Le module antimassmention est désormais désactivé",
           ]);
         }
       },
@@ -184,6 +318,50 @@ export class Settings extends BaseCommand {
           } else {
             await sendErrorEmbedWithCountdown(interaction, [
               "Le role spécifié est invalide.",
+            ]);
+          }
+        },
+      },
+      bypassrole: {
+        add: async () => {
+          const role = interaction.options.getRole("role", true);
+          try {
+            const guildDb = await getGuildSettings(interaction.guild!.id);
+            if (guildDb.bypass_roles.find((r) => role.id === r)) {
+              await sendErrorEmbedWithCountdown(interaction, [
+                "Le rôle est déjà dans la liste des rôles bypass",
+              ]);
+              return;
+            }
+
+            await addBypassRoleToGuild(interaction.guild!.id, role.id);
+            await sendValidEmbedWithCountdown(interaction, [
+              "Le rôle a été ajouté à la liste des rôles bypass",
+            ]);
+          } catch (error) {
+            await sendErrorEmbedWithCountdown(interaction, [
+              "Une erreur est survenue lors de l'ajout du rôle à la liste des rôles bypass",
+            ]);
+          }
+        },
+        remove: async () => {
+          const role = interaction.options.getRole("role", true);
+          try {
+            const guildDb = await getGuildSettings(interaction.guild!.id);
+            if (!guildDb.bypass_roles.find((r) => role.id === r)) {
+              await sendErrorEmbedWithCountdown(interaction, [
+                "Le rôle n'est pas dans la liste des rôles bypass",
+              ]);
+              return;
+            }
+
+            await removeBypassRoleToGuild(interaction.guild!.id, role.id);
+            await sendValidEmbedWithCountdown(interaction, [
+              "Le rôle a été supprimé de la liste des rôles bypass",
+            ]);
+          } catch (error) {
+            await sendErrorEmbedWithCountdown(interaction, [
+              "Une erreur est survenue lors de la suppresion du rôle de la liste des rôles bypass",
             ]);
           }
         },

@@ -5,27 +5,37 @@ import {
   EmbedBuilder,
   ModalSubmitInteraction,
   TextInputStyle,
+  ButtonBuilder,
+  PermissionFlagsBits,
 } from "discord.js";
 import { CustomClient } from "structures/CustomClient";
 import { BaseCommand } from "structures/BaseCommand";
 import {
   ActionRowBuilder,
-  ButtonBuilder,
   ModalBuilder,
   SlashCommandBuilder,
   TextInputBuilder,
 } from "@discordjs/builders";
 
-import { sendErrorEmbedWithCountdown } from "utils/MessageUtils";
+import {
+  sendErrorEmbedWithCountdown,
+  sendValidEmbedWithCountdown,
+} from "utils/MessageUtils";
 import { scheduleJob } from "node-schedule";
-import { createNewGiveaway } from "database/utils/GiveawayUtils";
+import { createNewGiveaway, getGiveaway } from "database/utils/GiveawayUtils";
 import { BaseJobs } from "structures/BaseJobs";
+import {
+  endGiveaway,
+  formatTime,
+  rerollGiveaway,
+} from "modules/GiveawayModule";
 
 export class Giveaway extends BaseCommand {
   public constructor(client: CustomClient) {
     super(client, {
       data: new SlashCommandBuilder()
         .setName("giveaway")
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setDescription("Créer / Terminer / Reroll un giveaway")
         .addSubcommand((subcommand) =>
           subcommand.setName("create").setDescription("Créer un giveaway"),
@@ -36,7 +46,7 @@ export class Giveaway extends BaseCommand {
             .setDescription("Terminer un giveaway")
             .addStringOption((option) =>
               option
-                .setName("message_id")
+                .setName("giveaway_id")
                 .setDescription("ID du message du giveaway")
                 .setRequired(true),
             ),
@@ -47,7 +57,7 @@ export class Giveaway extends BaseCommand {
             .setDescription("Reroll un giveaway")
             .addStringOption((option) =>
               option
-                .setName("message_id")
+                .setName("giveaway_id")
                 .setDescription("ID du message du giveaway")
                 .setRequired(true),
             ),
@@ -74,13 +84,13 @@ export class Giveaway extends BaseCommand {
 
     const subcommands: Record<string, () => Promise<void>> = {
       create: async () => {
-        await this.createGiveaway(interaction);
+        await this.createGiveawayCmd(interaction);
       },
       end: async () => {
-        await this.endGiveaway(interaction);
+        await this.endGiveawayCmd(interaction);
       },
       reroll: async () => {
-        await this.rerollGiveaway(interaction);
+        await this.rerollGiveawayCmd(interaction);
       },
     };
 
@@ -94,7 +104,7 @@ export class Giveaway extends BaseCommand {
     }
   }
 
-  private async createGiveaway(
+  private async createGiveawayCmd(
     interaction: ChatInputCommandInteraction,
   ): Promise<void> {
     const modal = this.createModal();
@@ -105,16 +115,69 @@ export class Giveaway extends BaseCommand {
       .then((i) => this.submitGiveaway(i, interaction));
   }
 
-  private async endGiveaway(
+  private async endGiveawayCmd(
     interaction: ChatInputCommandInteraction,
   ): Promise<void> {
-    // Code here
+    const messageId = interaction.options.getString("giveaway_id", true);
+
+    const giveaway = await getGiveaway(messageId, interaction.guildId!);
+
+    if (!giveaway) {
+      await sendErrorEmbedWithCountdown(interaction, ["Giveaway non trouvé."]);
+      return;
+    }
+
+    if (giveaway.isEnded) {
+      await sendErrorEmbedWithCountdown(interaction, [
+        "Le giveaway est déjà terminé.",
+      ]);
+      return;
+    }
+
+    await endGiveaway(this.client, messageId, interaction.guild!.id);
+
+    await sendValidEmbedWithCountdown(interaction, [
+      "Giveaway terminé avec succès !",
+    ]);
   }
 
-  private async rerollGiveaway(
+  private async rerollGiveawayCmd(
     interaction: ChatInputCommandInteraction,
   ): Promise<void> {
-    // Code here
+    const giveawayId = interaction.options.getString("giveaway_id", true);
+
+    const giveaway = await getGiveaway(giveawayId, interaction.guildId!);
+
+    if (!giveaway) {
+      await sendErrorEmbedWithCountdown(interaction, ["Giveaway non trouvé."]);
+      return;
+    }
+
+    if (!giveaway.isEnded) {
+      await sendErrorEmbedWithCountdown(interaction, [
+        "Le giveaway n'est pas terminé.",
+      ]);
+      return;
+    }
+
+    const winners = await rerollGiveaway(
+      this.client,
+      giveawayId,
+      interaction.guild!.id,
+    );
+
+    const winnersText =
+      winners.length > 0
+        ? winners.map((winner) => `<@${winner}>`).join(", ")
+        : "Aucun gagnant";
+
+    await interaction.channel!.send({
+      content: `🎉 | Le tirage a été **relancé** ! Les nouveaux gagnants sont : ${winnersText}.\n**Merci de créer un ticket pour récupérer vos gains.**`,
+    });
+
+    await sendValidEmbedWithCountdown(interaction, [
+      "Tirage du giveaway relancé avec succès !",
+    ]);
   }
 
   public async submitGiveaway(
@@ -123,30 +186,38 @@ export class Giveaway extends BaseCommand {
   ) {
     const { channel } = initialInteraction;
     const title = modalInteraction.fields.getTextInputValue("title-input");
-    const description = modalInteraction.fields.getTextInputValue("desc-input");
+    const nbWinnerString =
+      modalInteraction.fields.getTextInputValue("nb-winner-input");
     const time = modalInteraction.fields.getTextInputValue("time-input");
 
-    const [isValid, timeInMs] = this.parseTime(time);
-
-    if (!isValid || !timeInMs) {
+    const [isValidTimer, timeInMs] = this.parseTime(time);
+    const [isValidNumber, nbWinner] = this.validateNumber(nbWinnerString);
+    if (!isValidTimer || !timeInMs) {
       await sendErrorEmbedWithCountdown(modalInteraction, [
         "Le temps n'est pas valide. Utilisez un format comme 1d, 1h, ou 1m.",
       ]);
       return;
     }
 
+    if (!isValidNumber || nbWinner === 0) {
+      await sendErrorEmbedWithCountdown(modalInteraction, [
+        "Le nombre de gagnants n'est pas valide. Utilisez un nombre entier supérieur à 0.",
+      ]);
+    }
+
     await modalInteraction.deferUpdate();
 
     const endDate = new Date(Date.now() + timeInMs);
-
-    scheduleJob(endDate, async () => {
-      // TODO : Finir le giveaway
-    });
+    const formatedTime = formatTime(timeInMs);
 
     const embed = new EmbedBuilder()
       .setTitle(title)
-      .setDescription(description)
-      .setFooter({ text: `Fin dans ${time}` });
+      .setDescription(
+        `Cliquez sur le bouton pour participer 🎉 !\n\nOrganisé par : <@${modalInteraction.user.id}>\nNombre de participants : 0\nNombre de gagnants : ${nbWinner}\n\nTirage dans : \`\`${formatedTime}\`\``,
+      )
+      .setFooter({ text: `Giveaways` })
+      .setColor("#87CEFA")
+      .setTimestamp();
 
     await channel!.send({ embeds: [embed] }).then(async (msg) => {
       await createNewGiveaway(
@@ -155,11 +226,13 @@ export class Giveaway extends BaseCommand {
         endDate,
         msg.channel.id,
         modalInteraction.guildId!,
+        nbWinner,
       );
 
       const btn = new ButtonBuilder()
         .setCustomId("giveaway-" + msg.id)
-        .setLabel("Participer")
+        .setLabel("| Participer")
+        .setEmoji("🎉")
         .setStyle(ButtonStyle.Primary);
 
       const newGiveawayJob: BaseJobs = {
@@ -169,17 +242,26 @@ export class Giveaway extends BaseCommand {
         schedule: endDate,
         log: true,
         execute: async () => {
-          // TODO : Finir le giveaway
-          console.log("Giveaway terminé");
+          endGiveaway(this.client, msg.id, modalInteraction.guildId!);
         },
       };
 
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(btn);
 
-      await this.client.jobService.addJob(newGiveawayJob);
+      await this.client.jobService.addJob(newGiveawayJob, true);
 
       await msg.edit({ embeds: [embed], components: [row] });
     });
+  }
+
+  private validateNumber(value: string): [boolean, number] {
+    const number = parseFloat(value);
+
+    if (!Number.isNaN(number) && Number.isFinite(number) && number > 0) {
+      return [true, number]; // Si c'est un nombre valide, retourne true et le nombre
+    }
+
+    return [false, 0]; // Si ce n'est pas un nombre valide, retourne false et null
   }
 
   private parseTime(time: string): [boolean, number?] {
@@ -228,11 +310,11 @@ export class Giveaway extends BaseCommand {
       .setMaxLength(256)
       .setRequired(true);
 
-    const descInput = new TextInputBuilder()
-      .setCustomId("desc-input")
-      .setLabel("Quel est la description du giveaway ?")
-      .setStyle(TextInputStyle.Paragraph)
-      .setValue("")
+    const nbWinnerInput = new TextInputBuilder()
+      .setCustomId("nb-winner-input")
+      .setLabel("Nombre de gagnants ? (1 par défaut)")
+      .setStyle(TextInputStyle.Short)
+      .setValue("1")
       .setRequired(true);
 
     const timeInput = new TextInputBuilder()
@@ -246,7 +328,7 @@ export class Giveaway extends BaseCommand {
       new ActionRowBuilder<TextInputBuilder>().addComponents(titleInput);
 
     const secondActionRow =
-      new ActionRowBuilder<TextInputBuilder>().addComponents(descInput);
+      new ActionRowBuilder<TextInputBuilder>().addComponents(nbWinnerInput);
 
     const thirdActionRow =
       new ActionRowBuilder<TextInputBuilder>().addComponents(timeInput);
