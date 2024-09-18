@@ -8,16 +8,20 @@ import { BaseCommand } from "structures/BaseCommand";
 import { SlashCommandBuilder } from "@discordjs/builders";
 
 import {
+  addBypassChannelToGuild,
   addBypassRoleToGuild,
   getGuildSettings,
+  removeBypassChannelToGuild,
   removeBypassRoleToGuild,
   setAntiBadWord,
   setAntiLink,
   setAntiMassMention,
   setAntiSpam,
+  setAvisChannel,
   setBlackListChannel,
   setBlackListRole,
   setLevelUpChannel,
+  setPrestataireMode,
   setSuggestionChannel,
   setWelcomeChannel,
   upsertRoleForLevel,
@@ -50,6 +54,18 @@ export class Settings extends BaseCommand {
           subcommand
             .setName("suggestion")
             .setDescription("Changer le channel de suggestion")
+            .addChannelOption((option) =>
+              option
+                .setName("channel")
+                .setDescription("Le channel")
+                .addChannelTypes(ChannelType.GuildText)
+                .setRequired(true),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("avis")
+            .setDescription("Changer le channel des avis")
             .addChannelOption((option) =>
               option
                 .setName("channel")
@@ -139,6 +155,17 @@ export class Settings extends BaseCommand {
         )
         .addSubcommand((subcommand) =>
           subcommand
+            .setName("prestatairemode")
+            .setDescription("Activer/désactiver le module prestataire")
+            .addBooleanOption((option) =>
+              option
+                .setName("state")
+                .setDescription("Activer ou désactiver le module")
+                .setRequired(true),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
             .setName("antispam")
             .setDescription("Activer/désactiver le module antispam")
             .addBooleanOption((option) =>
@@ -196,6 +223,41 @@ export class Settings extends BaseCommand {
                     .setRequired(true),
                 ),
             ),
+        )
+        .addSubcommandGroup((subcommand) =>
+          subcommand
+            .setName("bypasschannel")
+            .setDescription("Les channels / catégories à bypass")
+            .addSubcommand((sub) =>
+              sub
+                .setName("add")
+                .setDescription("Ajouter un channel/catégorie bypass")
+                .addChannelOption((option) =>
+                  option
+                    .setName("channel")
+                    .setDescription("Le channel/catégorie")
+                    .addChannelTypes(
+                      ChannelType.GuildText,
+                      ChannelType.GuildCategory,
+                    )
+                    .setRequired(true),
+                ),
+            )
+            .addSubcommand((sub) =>
+              sub
+                .setName("remove")
+                .setDescription("Supprimer un channel/catégorie bypass")
+                .addChannelOption((option) =>
+                  option
+                    .setName("channel")
+                    .addChannelTypes(
+                      ChannelType.GuildText,
+                      ChannelType.GuildCategory,
+                    )
+                    .setDescription("Le channel/catégorie")
+                    .setRequired(true),
+                ),
+            ),
         ),
 
       cooldown: 1000,
@@ -229,6 +291,33 @@ export class Settings extends BaseCommand {
         } else {
           await sendErrorEmbedWithCountdown(interaction, [
             "Le channel spécifié n'est pas un channel text ou est introuvable.",
+          ]);
+        }
+      },
+      avis: async () => {
+        const channel = interaction.options.getChannel("channel");
+        if (channel && channel.type === ChannelType.GuildText) {
+          await setAvisChannel(interaction.guild!, channel.id);
+          await sendValidEmbedWithCountdown(interaction, [
+            `Le channel d'avis est désormais ${channel}`,
+          ]);
+        } else {
+          await sendErrorEmbedWithCountdown(interaction, [
+            "Le channel spécifié n'est pas un channel text ou est introuvable.",
+          ]);
+        }
+      },
+      prestatairemode: async () => {
+        const state = interaction.options.getBoolean("state");
+        if (state) {
+          await setPrestataireMode(interaction.guild!, true);
+          await sendValidEmbedWithCountdown(interaction, [
+            "Le module prestataire est désormais activé",
+          ]);
+        } else {
+          await setPrestataireMode(interaction.guild!, false);
+          await sendValidEmbedWithCountdown(interaction, [
+            "Le module prestataire est désormais désactivé",
           ]);
         }
       },
@@ -362,6 +451,50 @@ export class Settings extends BaseCommand {
           } catch (error) {
             await sendErrorEmbedWithCountdown(interaction, [
               "Une erreur est survenue lors de la suppresion du rôle de la liste des rôles bypass",
+            ]);
+          }
+        },
+      },
+      bypasschannel: {
+        add: async () => {
+          const channel = interaction.options.getChannel("channel", true);
+          try {
+            const guildDb = await getGuildSettings(interaction.guild!.id);
+            if (guildDb.bypass_channels.find((c) => channel.id === c)) {
+              await sendErrorEmbedWithCountdown(interaction, [
+                "Le channel/catégorie est déjà dans la liste des channels bypass",
+              ]);
+              return;
+            }
+
+            await addBypassChannelToGuild(interaction.guild!.id, channel.id);
+            await sendValidEmbedWithCountdown(interaction, [
+              "Le channel/categorie a été ajouté à la liste des channels bypass",
+            ]);
+          } catch (error) {
+            await sendErrorEmbedWithCountdown(interaction, [
+              "Une erreur est survenue lors de l'ajout du channel/categorie à la liste des channel bypass",
+            ]);
+          }
+        },
+        remove: async () => {
+          const channel = interaction.options.getChannel("channel", true);
+          try {
+            const guildDb = await getGuildSettings(interaction.guild!.id);
+            if (!guildDb.bypass_channels.find((c) => channel.id === c)) {
+              await sendErrorEmbedWithCountdown(interaction, [
+                "Le channel/catégorie n'est pas dans la liste des channels bypass",
+              ]);
+              return;
+            }
+
+            await removeBypassChannelToGuild(interaction.guild!.id, channel.id);
+            await sendValidEmbedWithCountdown(interaction, [
+              "Le channel/catégorie a été supprimé de la liste des channels bypass",
+            ]);
+          } catch (error) {
+            await sendErrorEmbedWithCountdown(interaction, [
+              "Une erreur est survenue lors de la suppresion du channel/catégorie de la liste des channels bypass",
             ]);
           }
         },

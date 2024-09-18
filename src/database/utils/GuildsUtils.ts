@@ -134,6 +134,46 @@ export async function setSuggestionChannel(guild: Guild, channelId: string) {
   }
 }
 
+export async function setAvisChannel(guild: Guild, channelId: string) {
+  const client = guild.client as CustomClient;
+
+  try {
+    // Mise à jour directe du welcome_channel_id pour la guilde donnée
+    await GuildModel.updateOne(
+      { _id: guild.id }, // Filtre : on sélectionne la guilde par son _id
+      { $set: { avis_channel_id: channelId } }, // Mise à jour du welcome_channel_id
+    );
+
+    const cachedGuild = guildCache.get<CustomGuild>(guild.id);
+
+    if (cachedGuild) {
+      // Si la guilde est dans le cache, on met à jour uniquement le welcome_channel_id
+      cachedGuild.avis_channel_id = channelId;
+      guildCache.set(guild.id, cachedGuild); // Met à jour le cache
+    }
+
+    Logger.info(client.lang.info.avisChannelUpdate, guild.id);
+  } catch (error) {
+    Logger.error(client.lang.error.avisChannelUpdate, guild.id, error);
+  }
+}
+
+export async function setPrestataireMode(guild: Guild, state: boolean) {
+  const client = guild.client as CustomClient;
+
+  await GuildModel.updateOne(
+    { _id: guild.id },
+    { $set: { isPrestataireOn: state } },
+  );
+
+  const cachedGuild = guildCache.get<CustomGuild>(guild.id);
+
+  if (cachedGuild) {
+    cachedGuild.isPrestataireOn = state;
+    guildCache.set(guild.id, cachedGuild);
+  }
+}
+
 export async function setAntiLink(guild: Guild, state: boolean) {
   const client = guild.client as CustomClient;
 
@@ -361,6 +401,48 @@ export async function removeBypassRoleToGuild(
     guildCache.set(guildId, newGuild);
   } catch (error) {
     Logger.error(Logs.error.removeBypassRoleToGuild, guildId, roleId, error);
+    throw error;
+  }
+}
+
+export async function addBypassChannelToGuild(
+  guildId: string,
+  channelId: string,
+): Promise<void> {
+  try {
+    const newGuild = await GuildModel.findOneAndUpdate(
+      { _id: guildId },
+      { $addToSet: { bypass_channels: channelId } }, // Utilise $addToSet pour éviter les doublons
+      { new: true },
+    );
+
+    guildCache.set(guildId, newGuild);
+  } catch (error) {
+    Logger.error(Logs.error.addBypassChannelToGuild, guildId, channelId, error);
+    throw error;
+  }
+}
+
+export async function removeBypassChannelToGuild(
+  guildId: string,
+  channelId: string,
+): Promise<void> {
+  try {
+    // Sauvegarde dans la DB
+    const newGuild = await GuildModel.findOneAndUpdate(
+      { _id: guildId },
+      { $pull: { bypass_channels: channelId } },
+      { new: true },
+    );
+
+    guildCache.set(guildId, newGuild);
+  } catch (error) {
+    Logger.error(
+      Logs.error.removeBypassChannelToGuild,
+      guildId,
+      channelId,
+      error,
+    );
     throw error;
   }
 }

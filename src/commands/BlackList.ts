@@ -104,6 +104,22 @@ export class BlackList extends BaseCommand {
       return;
     }
 
+    const channel = getOrFetchChannelById(
+      interaction.client as CustomClient,
+      interaction.channelId,
+    );
+    const role = getOrFetchRoleById(
+      interaction.guild!,
+      guildSettings.blacklist_role_id,
+    );
+
+    if (!channel || !role) {
+      await sendErrorEmbedWithCountdown(interaction, [
+        "Le role ou le channel de blacklist est introuvable.",
+      ]);
+      return;
+    }
+
     const subcommand = interaction.options.getSubcommand();
     if (subcommands[subcommand]) {
       await subcommands[subcommand]();

@@ -94,7 +94,7 @@ export class UserInfo extends BaseCommand {
         `Vous voyez actuellement certaines informations de <@${user.id}>.`,
       )
       .setFooter({
-        text: "© Copyright LZCorp",
+        text: "© Copyright LZCorp | NewsMC",
         iconURL: member.client.user.displayAvatarURL(),
       })
       .addFields([

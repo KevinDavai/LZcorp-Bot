@@ -26,6 +26,11 @@ export class CustomClient extends Client {
 
   private readonly _cooldowns: Collection<string, Collection<string, number>>;
 
+  private readonly _messageCache: Collection<
+    string,
+    { count: number; lastMessageTimestamp: number }
+  >;
+
   private readonly _ongoingCommands: Collection<string, BaseCommand>;
 
   public constructor() {
@@ -48,6 +53,7 @@ export class CustomClient extends Client {
     this._lang = Logs;
     this._commands = new Collection();
     this._cooldowns = new Collection();
+    this._messageCache = new Collection();
     this._ongoingCommands = new Collection();
   }
 
@@ -89,6 +95,10 @@ export class CustomClient extends Client {
 
   public get cooldown() {
     return this._cooldowns;
+  }
+
+  public get messageCache() {
+    return this._messageCache;
   }
 
   public get ongoingCommands() {

@@ -58,11 +58,11 @@ export class Invites extends BaseCommand {
       )
       .setColor("#87CEFA")
       .setFooter({
-        text: "© Copyright LZCorp",
+        text: "© Copyright LZCorp | NewsMC",
         iconURL: interaction.client.user.displayAvatarURL(),
       })
       .setTimestamp();
 
-    await interaction.reply({ embeds: [inviteEmbed], ephemeral: true });
+    await interaction.reply({ embeds: [inviteEmbed], ephemeral: false });
   }
 }

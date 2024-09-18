@@ -40,7 +40,7 @@ export class Classement extends BaseCommand {
       .setTitle(`Classement global des invitations`)
       .setColor("#87CEFA")
       .setFooter({
-        text: "© Copyright LZCorp",
+        text: "© Copyright LZCorp | NewsMC",
         iconURL: interaction.client.user.displayAvatarURL(),
       })
       .setTimestamp();
@@ -52,6 +52,6 @@ export class Classement extends BaseCommand {
 
     inviteEmbed.setDescription(description);
 
-    await interaction.reply({ embeds: [inviteEmbed], ephemeral: true });
+    await interaction.reply({ embeds: [inviteEmbed], ephemeral: false });
   }
 }

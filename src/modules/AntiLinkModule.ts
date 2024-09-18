@@ -1,15 +1,16 @@
 import { CustomGuild } from "database/models/GuildsModel";
 import { getOrFetchMemberById, getOrFetchRoleById } from "utils/MessageUtils";
 import { Logger } from "services/Logger";
-import { Message } from "discord.js";
+import { ChannelType, Message } from "discord.js";
 import logs from "../lang/logs.json";
 
-const linkRegex = /(https?:\/\/[^\s]+|discord\.gg\/[^\s]+)/gi; // Regular expression to match URLs and discord.gg/ links
+const linkRegex =
+  /(?:https?:\/\/|www\.)[^\s/$.?#].[^\s]*\b|discord\.gg\/[^\s]+/gi;
 
 export async function antiLinkModule(
   message: Message,
   guild: CustomGuild,
-): Promise<void> {
+): Promise<boolean> {
   // This function will be used to prevent users from sending links in the chat.
   // It will be used in the message event.
   // If the message contains a link, the bot will delete the message and send a warning to the user.
@@ -20,8 +21,17 @@ export async function antiLinkModule(
     if (
       member.roles.cache.some((role) => guild.bypass_roles.includes(role.id))
     ) {
-      return;
+      return false;
     }
+  }
+
+  if (guild.bypass_channels.includes(message.channel.id)) return false;
+  if (message.channel.type === ChannelType.GuildText) {
+    if (
+      message.channel.parentId &&
+      guild.bypass_channels.includes(message.channel.parentId)
+    )
+      return false;
   }
 
   if (linkRegex.test(message.content.toLowerCase())) {
@@ -31,8 +41,12 @@ export async function antiLinkModule(
       message.author.send(
         "Vous ne pouvez pas partager de liens ici. Votre message a été supprimé.",
       );
+
+      return true;
     } catch (error) {
       Logger.error(logs.error.handleAntiLink, error);
     }
   }
+
+  return false;
 }

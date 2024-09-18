@@ -18,7 +18,7 @@ export async function sendWelcomeEmbed(
           ➜ Pour avoir nos prix <#1192845767539441825>`,
       )
       .setFooter({
-        text: "© Copyright LZCorp",
+        text: "© Copyright LZCorp | NewsMC",
         iconURL: member.client.user.displayAvatarURL(),
       })
       .setColor("#87CEFA");

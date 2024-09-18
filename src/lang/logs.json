@@ -23,7 +23,8 @@
     "antiLinkUpdate": "AntiLink status updated for guild id: {0}",
     "antiSpamUpdate": "AntiSpam status updated for guild id: {0}",
     "antiBadWordUpdate": "AntiBadWord status updated for guild id: {0}",
-    "antiMassMentionUpdate": "AntiMassMention status updated for guild id: {0}"
+    "antiMassMentionUpdate": "AntiMassMention status updated for guild id: {0}",
+    "avisChannelUpdate": "Le channel d'avis a ete mis a jour pour la guild {0}"
   },
   "error": {
     "unspecified": "An unspecified error occurred.",
@@ -77,6 +78,9 @@
     "antiMassMentionUpdate": "Erreur lors de la mise à jour du status de l'antiMassMention pour la guild: {0}, error: {1}",
     "handleAntiLink": "Erreur lors de la gestion de l'antiLink pour la guild: {0}, error: {1}",
     "removeBypassRoleToGuild": "Erreur lors de la suppression du role de bypass pour la guild: {0}, roleId: {1}, error: {2}",
-    "addBypassRoleToGuild": "Erreur lors de l'ajout du role de bypass pour la guild: {0}, roleId: {1}, error: {2}"
+    "addBypassRoleToGuild": "Erreur lors de l'ajout du role de bypass pour la guild: {0}, roleId: {1}, error: {2}",
+    "addBypassChannelToGuild": "Erreur lors de l'ajout du channel de bypass pour la guild: {0}, channelId: {1}, error: {2}",
+    "removeBypassChannelToGuild": "Erreur lors de la suppression du channel de bypass pour la guild: {0}, channelId: {1}, error: {2}",
+    "avisChannelUpdate": "Erreur lors de la mise à jour du channel d'avis pour la guild: {0}, error: {1}"
   }
 }

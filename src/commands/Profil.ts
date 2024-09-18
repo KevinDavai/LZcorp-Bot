@@ -32,7 +32,16 @@ import { FooterModal } from "modals/EmbedFooterModal";
 import { ImageModal } from "modals/EmbedImageModal";
 import { AddFieldModal } from "modals/EmbedAddFieldModal";
 import { RemoveFieldModal } from "modals/EmbedRemoveFieldModal";
-import { sendErrorEmbedWithCountdown } from "utils/MessageUtils";
+import {
+  sendErrorEmbedWithCountdown,
+  sendValidEmbedWithCountdown,
+} from "utils/MessageUtils";
+import {
+  deleteProfil,
+  getProfilEmbeds,
+  insertNewProfil,
+} from "database/utils/ProfilModel";
+import { get } from "mongoose";
 
 const modalMapping: Record<string, BaseModal> = {
   title: new TitreModal(),
@@ -47,32 +56,124 @@ const modalMapping: Record<string, BaseModal> = {
   removeField: new RemoveFieldModal(),
 };
 
-export class ProfilCreator extends BaseCommand {
+export class Profil extends BaseCommand {
   public constructor(client: CustomClient) {
     super(client, {
       data: new SlashCommandBuilder()
-        .setName("profilcreator")
-        .setDescription("Create a new profil")
+        .setName("profil")
+        .setDescription("Créer un profil de prestataire.")
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-        .addUserOption((option) =>
-          option
-            .setName("utilisateur")
-            .setDescription("L'utilisateur pour lequel créer un profil")
-            .setRequired(true),
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("create")
+            .setDescription("Créer un profil de prestataire.")
+            .addUserOption((option) =>
+              option
+                .setName("utilisateur")
+                .setDescription("L'utilisateur pour lequel créer un profil")
+                .setRequired(false),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("delete")
+            .setDescription("Supprimer un profil de prestataire.")
+            .addUserOption((option) =>
+              option
+                .setName("utilisateur")
+                .setDescription("L'utilisateur pour lequel supprimer un profil")
+                .setRequired(false),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("edit")
+            .setDescription("Editer un profil de prestataire.")
+            .addUserOption((option) =>
+              option
+                .setName("utilisateur")
+                .setDescription("L'utilisateur pour lequel éditer un profil")
+                .setRequired(false),
+            ),
         ),
+
       cooldown: 1000,
+      subcommands: {
+        create: {
+          max: 1, // Max limit for /embed create
+        },
+        delete: {
+          max: 0, // No limit for /embed delete
+        },
+        edit: {
+          max: 1, // No limit for /embed edit
+        },
+      },
     });
   }
 
   public async execute(
     interaction: ChatInputCommandInteraction,
   ): Promise<void> {
+    if (!interaction.guild) {
+      await sendErrorEmbedWithCountdown(interaction, [
+        "Impossible de trouver le serveur.",
+      ]);
+      return;
+    }
+
+    const subcommands: Record<string, () => Promise<void>> = {
+      create: async () => {
+        await this.addProfil(interaction);
+      },
+      delete: async () => {
+        await this.deleteProfil(interaction);
+      },
+      edit: async () => {
+        await this.editProfil(interaction);
+      },
+    };
+
+    const subcommand = interaction.options.getSubcommand();
+    if (subcommands[subcommand]) {
+      await subcommands[subcommand]();
+    } else {
+      await sendErrorEmbedWithCountdown(interaction, [
+        "Sous commande inconnue.",
+      ]);
+    }
+  }
+
+  private async addProfil(
+    interaction: ChatInputCommandInteraction,
+  ): Promise<void> {
+    const user = interaction.options.getUser("utilisateur") || interaction.user;
+
+    if (!user) {
+      await sendErrorEmbedWithCountdown(interaction, [
+        "L'utilisateur n'existe pas ou est introuvable.",
+      ]);
+      this.clearProfilCreator(interaction, this.client);
+      return;
+    }
+
+    const embeds = await getProfilEmbeds(user.id, interaction.guild!.id);
+
+    if (embeds && embeds.length > 0) {
+      await sendErrorEmbedWithCountdown(interaction, [
+        "Un profil existe déjà pour cet utilisateur.",
+      ]);
+      this.clearProfilCreator(interaction, this.client);
+      return;
+    }
+
     const embed: EmbedBuilder[] = [];
 
     const currentPage: number = 0;
 
-    const user = interaction.options.getUser("utilisateur", true);
     embed[currentPage] = this.createDefaultEmbed(user, interaction);
+
+    console.log(embed);
 
     const row1 = this.createMenuRow();
     const row2 = this.createButtonRow(currentPage, embed);
@@ -83,7 +184,81 @@ export class ProfilCreator extends BaseCommand {
       ephemeral: true,
     });
 
-    this.handleComponentInteraction(interaction, embed, currentPage);
+    this.handleComponentInteraction(interaction, embed, currentPage, user);
+  }
+
+  private async deleteProfil(
+    interaction: ChatInputCommandInteraction,
+  ): Promise<void> {
+    const user = interaction.options.getUser("utilisateur") || interaction.user;
+
+    if (!user) {
+      await sendErrorEmbedWithCountdown(interaction, [
+        "L'utilisateur n'existe pas ou est introuvable.",
+      ]);
+      return;
+    }
+
+    const embeds = await getProfilEmbeds(user.id, interaction.guild!.id);
+
+    if (!embeds || embeds.length === 0) {
+      await sendErrorEmbedWithCountdown(interaction, [
+        "Aucun profil trouvé pour cet utilisateur.",
+      ]);
+      this.clearProfilCreator(interaction, this.client);
+      return;
+    }
+
+    try {
+      await deleteProfil(user.id, interaction.guild!.id);
+      await sendValidEmbedWithCountdown(interaction, [
+        "Profil supprimé avec succès.",
+      ]);
+    } catch (error) {
+      Logger.error("Error deleting profil", error);
+      await sendErrorEmbedWithCountdown(interaction, [
+        "Une erreur est survenue lors de la tentative de suppression du profil.",
+      ]);
+    }
+  }
+
+  private async editProfil(
+    interaction: ChatInputCommandInteraction,
+  ): Promise<void> {
+    const user = interaction.options.getUser("utilisateur") || interaction.user;
+
+    if (!user) {
+      await sendErrorEmbedWithCountdown(interaction, [
+        "L'utilisateur n'existe pas ou est introuvable.",
+      ]);
+      this.clearProfilCreator(interaction, this.client);
+      return;
+    }
+
+    const embedsDb = await getProfilEmbeds(user.id, interaction.guild!.id);
+
+    if (!embedsDb || embedsDb.length === 0) {
+      await sendErrorEmbedWithCountdown(interaction, [
+        "Aucun profil trouvé pour cet utilisateur.",
+      ]);
+      this.clearProfilCreator(interaction, this.client);
+      return;
+    }
+
+    const embeds = embedsDb.map((embed) => new EmbedBuilder(embed.data));
+
+    const currentPage = 0;
+
+    const row1 = this.createMenuRow();
+    const row2 = this.createButtonRow(currentPage, embeds);
+
+    await interaction.reply({
+      embeds: [embeds[currentPage]],
+      components: [row1, row2],
+      ephemeral: true,
+    });
+
+    this.handleComponentInteraction(interaction, embeds, currentPage, user);
   }
 
   private createMenuRow(): ActionRowBuilder<StringSelectMenuBuilder> {
@@ -195,11 +370,17 @@ export class ProfilCreator extends BaseCommand {
       .setStyle(ButtonStyle.Danger)
       .setLabel("Annuler");
 
+    const validButton = new ButtonBuilder()
+      .setCustomId("valid")
+      .setStyle(ButtonStyle.Success)
+      .setLabel("Valider");
+
     return new ActionRowBuilder<ButtonBuilder>().addComponents(
       addButton,
       prevButton,
       nextButton,
       cancelButton,
+      validButton,
     );
   }
 
@@ -207,6 +388,7 @@ export class ProfilCreator extends BaseCommand {
     interaction: CommandInteraction,
     embeds: EmbedBuilder[],
     currentPage: number,
+    user: User,
   ): Promise<void> {
     const response = await interaction.fetchReply();
     let newPage: number = currentPage;
@@ -249,7 +431,7 @@ export class ProfilCreator extends BaseCommand {
 
         this.updateEmbed(interaction, i, modalHandler, embeds, currentPage);
 
-        this.handleComponentInteraction(interaction, embeds, currentPage);
+        this.handleComponentInteraction(interaction, embeds, currentPage, user);
       });
 
       buttonCollector.on("collect", async (i) => {
@@ -275,23 +457,17 @@ export class ProfilCreator extends BaseCommand {
           case "cancel":
             await this.cancel(i);
             break;
+          case "valid":
+            await this.valid(i, user, newEmbed);
+            break;
           default:
             break;
         }
 
-        i.deferUpdate();
-
-        await interaction.editReply({
-          embeds: [newEmbed[newPage]],
-          components: [
-            this.createMenuRow(),
-            this.createButtonRow(newPage, newEmbed),
-          ],
-        });
-
-        if (selectedButtonId === "cancel") {
+        if (selectedButtonId === "cancel" || selectedButtonId === "valid") {
           interaction.deleteReply();
         } else {
+          await i.deferUpdate();
           await interaction.editReply({
             embeds: [newEmbed[newPage]],
             components: [
@@ -299,7 +475,7 @@ export class ProfilCreator extends BaseCommand {
               this.createButtonRow(newPage, newEmbed),
             ],
           });
-          this.handleComponentInteraction(interaction, newEmbed, newPage);
+          this.handleComponentInteraction(interaction, newEmbed, newPage, user);
         }
       });
 
@@ -401,9 +577,26 @@ export class ProfilCreator extends BaseCommand {
       | CommandInteraction
       | ButtonInteraction
       | ChatInputCommandInteraction,
-  ): Promise<void> {
+  ): void {
     this.clearProfilCreator(interaction, interaction.client as CustomClient);
-    return Promise.resolve();
+  }
+
+  private async valid(
+    interaction:
+      | CommandInteraction
+      | ButtonInteraction
+      | ChatInputCommandInteraction,
+    user: User,
+    embeds: EmbedBuilder[],
+  ): Promise<void> {
+    await insertNewProfil(user.id, interaction.guild!.id, embeds);
+
+    await sendValidEmbedWithCountdown(interaction, [
+      "Profil créé avec succès.",
+      "Vous pouvez le consulter avec /prestataire <utilisateur>",
+    ]);
+
+    this.clearProfilCreator(interaction, interaction.client as CustomClient);
   }
 
   private createDefaultEmbed(
@@ -436,7 +629,7 @@ export class ProfilCreator extends BaseCommand {
         )
         .setColor(0xffffff)
         .setFooter({
-          text: "© LZCorp",
+          text: "© Copyright LZCorp | NewsMC",
         })
         .setTimestamp(Date.now());
     }
@@ -468,7 +661,7 @@ export class ProfilCreator extends BaseCommand {
       )
       .setColor(0xffffff)
       .setFooter({
-        text: "© LZCorp",
+        text: "© Copyright LZCorp | NewsMC",
         iconURL: interaction?.client.user.displayAvatarURL() ?? "",
       })
       .setTimestamp(Date.now());

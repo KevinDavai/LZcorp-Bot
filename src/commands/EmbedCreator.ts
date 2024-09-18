@@ -545,7 +545,7 @@ export class EmbedCreator extends BaseCommand {
       .setURL("https://www.google.com")
       .setColor(0xffffff)
       .setFooter({
-        text: "© LZCorp",
+        text: "© Copyright LZCorp | NewsMC",
       })
       .setTimestamp(Date.now());
   }

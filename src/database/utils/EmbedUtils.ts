@@ -30,9 +30,10 @@ export async function deleteEmbed(
   guild: Guild,
 ): Promise<void> {
   try {
+    const cachekey = `${guild.id}-${embedId}`;
     await EmbedModel.deleteOne({ _id: embedId, guildId: guild.id });
 
-    embedCache.del(guild.id);
+    embedCache.del(cachekey);
   } catch (error) {
     Logger.error(Logs.error.deleteEmbed, embedId, guild.id, error);
     throw error;
