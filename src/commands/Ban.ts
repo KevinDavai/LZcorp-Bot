@@ -14,7 +14,7 @@ export class Ban extends BaseCommand {
     super(client, {
       data: new SlashCommandBuilder()
         .setName("ban")
-        .setDescription("Banni un utilisateur")
+        .setDescription("Bannir un utilisateur")
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
         .addUserOption((option) =>
           option

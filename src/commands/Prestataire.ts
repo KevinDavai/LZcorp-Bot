@@ -39,36 +39,12 @@ export class Prestataire extends BaseCommand {
                 .setDescription("Nom du prestataire.")
                 .setRequired(true),
             ),
-        )
-        .addSubcommand((subcommand) =>
-          subcommand.setName("list").setDescription("Lister les prestataires."),
-        )
-        .addSubcommand((subcommand) =>
-          subcommand
-            .setName("avis")
-            .setDescription("Ajouter un avis à un prestataire.")
-            .addUserOption((option) =>
-              option
-                .setName("prestataire")
-                .setDescription("Nom du prestataire.")
-                .setRequired(true),
-            )
-            .addStringOption((option) =>
-              option
-                .setName("avis")
-                .setDescription("Votre avis.")
-                .setRequired(true),
-            )
-            .addNumberOption((option) =>
-              option
-                .setName("note")
-                .setDescription("Votre note. (1 à 5)")
-                .setRequired(true)
-                .setMinValue(1)
-                .setMaxValue(5),
-            ),
         ),
+      // .addSubcommand((subcommand) =>
+      //   subcommand.setName("list").setDescription("Lister les prestataires."),
+      // ),
     });
+    this.guildIdOnly = "916487743004114974";
   }
 
   public async execute(
@@ -81,19 +57,9 @@ export class Prestataire extends BaseCommand {
       list: async () => {
         await this.listPrestataire(interaction);
       },
-      avis: async () => {
-        await this.addAvis(interaction);
-      },
     };
 
     const guildSettings = await getGuildSettings(interaction.guildId!);
-
-    if (!guildSettings?.isPrestataireOn) {
-      await sendErrorEmbedWithCountdown(interaction, [
-        "La fonctionnalité prestataire est désactivée sur ce serveur.",
-      ]);
-      return;
-    }
 
     const subcommand = interaction.options.getSubcommand();
     if (subcommands[subcommand]) {
@@ -103,76 +69,6 @@ export class Prestataire extends BaseCommand {
         "Sous commande inconnue.",
       ]);
     }
-  }
-
-  private async addAvis(
-    interaction: ChatInputCommandInteraction,
-  ): Promise<void> {
-    const guildSettings = await getGuildSettings(interaction.guildId!);
-    const channelAvis = guildSettings.avis_channel_id;
-
-    if (!channelAvis) {
-      await sendErrorEmbedWithCountdown(interaction, [
-        "La fonctionnalité avis est désactivée sur ce serveur.",
-      ]);
-      return;
-    }
-
-    const channel = await getOrFetchChannelById(
-      interaction.guild!,
-      channelAvis,
-    );
-
-    if (!channel || !channel.isTextBased()) {
-      await sendErrorEmbedWithCountdown(interaction, [
-        "Le channel d'avis est introuvable.",
-      ]);
-      return;
-    }
-
-    const prestataire = interaction.options.getUser("prestataire", true);
-    const avis = interaction.options.getString("avis", true);
-    const note = interaction.options.getNumber("note", true);
-
-    const prestataireDb = await getProfilEmbeds(
-      prestataire.id,
-      interaction.guildId!,
-    );
-
-    if (!prestataireDb) {
-      await sendErrorEmbedWithCountdown(interaction, [
-        "Le prestataire n'existe pas.",
-      ]);
-      return;
-    }
-
-    const avisEmbed = new EmbedBuilder()
-      .setTitle(`📝 | Avis de ${interaction.user.username}`)
-      .setDescription(
-        `➜ **Prestataire** : <@${prestataire.id}>\n➜ **Avis** : ${avis}\n➜ **Notation** : ${this.getStarRating(note)}`,
-      )
-      .setColor("#87CEFA") // Couleur verte
-      .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
-        iconURL: interaction.client.user.displayAvatarURL(),
-      });
-
-    await channel.send({ embeds: [avisEmbed] });
-
-    await sendValidEmbedWithCountdown(interaction, [
-      "Votre avis a bien été envoyé.",
-    ]);
-  }
-
-  private getStarRating(note: number, maxNote: number = 5): string {
-    const fullStar = "⭐";
-
-    // Crée une chaîne avec les étoiles pleines
-    const filledStars = fullStar.repeat(note);
-
-    // Crée une chaîne avec les étoiles vides pour le reste
-
-    return filledStars;
   }
 
   private async showPrestataire(

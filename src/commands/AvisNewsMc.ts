@@ -1,31 +1,29 @@
-import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
-import { CustomClient } from "structures/CustomClient";
+import { getGuildSettings } from "database/utils/GuildsUtils";
+import { getProfilEmbeds } from "database/utils/ProfilModel";
+import {
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  SlashCommandBuilder,
+} from "discord.js";
 import { BaseCommand } from "structures/BaseCommand";
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { CustomClient } from "structures/CustomClient";
 import {
   getOrFetchChannelById,
   sendErrorEmbedWithCountdown,
   sendValidEmbedWithCountdown,
 } from "utils/MessageUtils";
-import { getGuildSettings } from "database/utils/GuildsUtils";
 
-export class Avis extends BaseCommand {
+export class AvisNewsMc extends BaseCommand {
   public constructor(client: CustomClient) {
     super(client, {
       data: new SlashCommandBuilder()
         .setName("avis")
-        .setDescription("Donner un avis sur un service.")
-        .addStringOption((option) =>
+        .setDescription("Donner un avis sur un prestataire.")
+        .addUserOption((option) =>
           option
-            .setName("service")
-            .setDescription("Le service utilisé")
-            .setRequired(true)
-            .addChoices(
-              { name: "Communication", value: "communication" },
-              { name: "Audiovisuel", value: "audiovisuel" },
-              { name: "Artistique", value: "artistique" },
-              { name: "Développement", value: "developpement" },
-            ),
+            .setName("prestataire")
+            .setDescription("Le prestataire à noter")
+            .setRequired(true),
         )
         .addStringOption((option) =>
           option.setName("avis").setDescription("Ton avis").setRequired(true),
@@ -39,6 +37,7 @@ export class Avis extends BaseCommand {
             .setRequired(true),
         ),
     });
+    this.guildIdOnly = "916487743004114974";
   }
 
   private getStarRating(note: number, maxNote: number = 5): string {
@@ -58,7 +57,7 @@ export class Avis extends BaseCommand {
     const guildSettings = await getGuildSettings(interaction.guildId!);
     const channelAvis = guildSettings.avis_channel_id;
 
-    if (!channelAvis || guildSettings.isPrestataireOn === true) {
+    if (!channelAvis) {
       await sendErrorEmbedWithCountdown(interaction, [
         "La fonctionnalité avis est désactivée sur ce serveur.",
       ]);
@@ -77,16 +76,28 @@ export class Avis extends BaseCommand {
       return;
     }
 
-    const service = interaction.options.getString("service", true);
+    const prestataire = interaction.options.getUser("prestataire", true);
     const avis = interaction.options.getString("avis", true);
     const note = interaction.options.getNumber("note", true);
+
+    const prestataireDb = await getProfilEmbeds(
+      prestataire.id,
+      interaction.guildId!,
+    );
+
+    if (!prestataireDb) {
+      await sendErrorEmbedWithCountdown(interaction, [
+        "Le prestataire n'existe pas.",
+      ]);
+      return;
+    }
 
     const avisEmbed = new EmbedBuilder()
       .setTitle(`📝 | Avis de ${interaction.user.username}`)
       .setDescription(
-        `➜ **Services** : ${service}\n➜ **Avis** : ${avis}\n➜ **Notation** : ${this.getStarRating(note)}`,
+        `➜ **Prestataire** : <@${prestataire.id}>\n➜ **Avis** : ${avis}\n➜ **Notation** : ${this.getStarRating(note)}`,
       )
-      .setColor("#87CEFA")
+      .setColor("#87CEFA") // Couleur verte
       .setFooter({
         text: "© Copyright LZCorp | NewsMC",
         iconURL: interaction.client.user.displayAvatarURL(),

@@ -39,7 +39,12 @@ export class CommandEvent extends BaseEvent {
       return;
     }
 
-    const command = this.client.commands.get(interaction.commandName);
+    let command = this.client.commands.get(interaction.commandName);
+
+    if (!command) {
+      const commandKey = `${interaction.commandName}_${interaction.guildId}`;
+      command = this.client.commands.get(commandKey);
+    }
 
     if (!command?.data) {
       return;

@@ -26,11 +26,14 @@ export abstract class BaseCommand {
     }
   >;
 
+  guildIdOnly?: string;
+
   constructor(client: CustomClient, options: CommandOptions) {
     this.client = client;
     this.data = options.data;
     this.cooldown = options.cooldown;
     this.subcommands = options.subcommands;
+    this.guildIdOnly = options.guildIdOnly;
   }
 
   abstract execute(interaction: CommandInteraction): Promise<void> | void;

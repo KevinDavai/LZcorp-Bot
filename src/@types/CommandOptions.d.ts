@@ -9,4 +9,5 @@ export type CommandOptions = {
       max?: number; // Max limit for this subcommand
     }
   >;
+  guildIdOnly?: string;
 };

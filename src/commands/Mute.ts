@@ -15,7 +15,7 @@ export class Mute extends BaseCommand {
     super(client, {
       data: new SlashCommandBuilder()
         .setName("mute")
-        .setDescription("Muté un utilisateur")
+        .setDescription("Muter un utilisateur")
         .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
         .addUserOption((option) =>
           option

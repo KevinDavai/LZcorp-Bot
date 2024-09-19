@@ -15,7 +15,7 @@ export class Kick extends BaseCommand {
     super(client, {
       data: new SlashCommandBuilder()
         .setName("kick")
-        .setDescription("Expulse un utilisateur du serveur.")
+        .setDescription("Expulser un utilisateur du serveur.")
         .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers) // Permissions pour ceux qui peuvent kicker
         .addUserOption((option) =>
           option

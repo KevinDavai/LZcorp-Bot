@@ -21,7 +21,6 @@ import {
   setBlackListChannel,
   setBlackListRole,
   setLevelUpChannel,
-  setPrestataireMode,
   setSuggestionChannel,
   setWelcomeChannel,
   upsertRoleForLevel,
@@ -36,7 +35,7 @@ export class Settings extends BaseCommand {
     super(client, {
       data: new SlashCommandBuilder()
         .setName("settings")
-        .setDescription("Edit settings of the server")
+        .setDescription("Modifier les paramètres du serveur")
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addSubcommand((subcommand) =>
           subcommand
@@ -153,17 +152,7 @@ export class Settings extends BaseCommand {
                 .setRequired(true),
             ),
         )
-        .addSubcommand((subcommand) =>
-          subcommand
-            .setName("prestatairemode")
-            .setDescription("Activer/désactiver le module prestataire")
-            .addBooleanOption((option) =>
-              option
-                .setName("state")
-                .setDescription("Activer ou désactiver le module")
-                .setRequired(true),
-            ),
-        )
+
         .addSubcommand((subcommand) =>
           subcommand
             .setName("antispam")
@@ -307,20 +296,7 @@ export class Settings extends BaseCommand {
           ]);
         }
       },
-      prestatairemode: async () => {
-        const state = interaction.options.getBoolean("state");
-        if (state) {
-          await setPrestataireMode(interaction.guild!, true);
-          await sendValidEmbedWithCountdown(interaction, [
-            "Le module prestataire est désormais activé",
-          ]);
-        } else {
-          await setPrestataireMode(interaction.guild!, false);
-          await sendValidEmbedWithCountdown(interaction, [
-            "Le module prestataire est désormais désactivé",
-          ]);
-        }
-      },
+
       antilink: async () => {
         const state = interaction.options.getBoolean("state");
         if (state) {

@@ -97,6 +97,7 @@ export class Profil extends BaseCommand {
             ),
         ),
 
+      guildIdOnly: "916487743004114974",
       cooldown: 1000,
       subcommands: {
         create: {
@@ -172,8 +173,6 @@ export class Profil extends BaseCommand {
     const currentPage: number = 0;
 
     embed[currentPage] = this.createDefaultEmbed(user, interaction);
-
-    console.log(embed);
 
     const row1 = this.createMenuRow();
     const row2 = this.createButtonRow(currentPage, embed);

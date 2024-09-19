@@ -15,7 +15,7 @@ export class Unmute extends BaseCommand {
     super(client, {
       data: new SlashCommandBuilder()
         .setName("unmute")
-        .setDescription("Démuté un utilisateur")
+        .setDescription("Démuter un utilisateur")
         .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
         .addUserOption((option) =>
           option

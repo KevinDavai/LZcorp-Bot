@@ -12,7 +12,7 @@ export class Invites extends BaseCommand {
       data: new SlashCommandBuilder()
         .setName("invites")
         .setDescription(
-          "Afficher les info sur les invitations d'un utilisateur.",
+          "Afficher les infos sur les invitations d'un utilisateur.",
         )
         .addUserOption((option) =>
           option.setName("pseudo").setDescription("Nom de l'utilisateur."),

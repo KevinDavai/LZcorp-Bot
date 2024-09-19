@@ -1,3 +1,7 @@
+// eslint-disable-next-line eslint-comments/disable-enable-pair
+/* eslint-disable no-await-in-loop */
+// eslint-disable-next-line eslint-comments/disable-enable-pair
+/* eslint-disable no-restricted-syntax */
 import { glob } from "glob";
 import path from "path";
 import {
@@ -36,10 +40,37 @@ export class HandlerManager {
     // const rest = new REST().setToken(process.env.DISCORD_TOKEN as string);
 
     // try {
-    //   const data = (await rest.put(
-    //     Routes.applicationCommands(process.env.DISCORD_CLIENT_ID),
-    //     { body: this.client.commands.map((cmd) => cmd.data) },
-    //   )) as RESTPutAPIApplicationCommandsJSONBody[];
+    //   // Filtrer les commandes : Globales vs Guildes spécifiques
+    //   const globalCommands = this.client.commands.filter(
+    //     (cmd) => !cmd.guildIdOnly,
+    //   );
+    //   const guildSpecificCommands = this.client.commands.filter(
+    //     (cmd) => cmd.guildIdOnly,
+    //   );
+
+    //   // Enregistrement des commandes globales
+    //   if (globalCommands.size > 0) {
+    //     await rest.put(
+    //       Routes.applicationCommands(process.env.DISCORD_CLIENT_ID),
+    //       { body: globalCommands.map((cmd) => cmd.data) },
+    //     );
+    //     Logger.info(`Global commands registered successfully.`);
+    //   }
+
+    //   // Enregistrement des commandes spécifiques à une guilde
+    //   for (const command of guildSpecificCommands) {
+    //     const commandGuildId = command[0].split("_")[1];
+    //     await rest.post(
+    //       Routes.applicationGuildCommands(
+    //         process.env.DISCORD_CLIENT_ID,
+    //         commandGuildId,
+    //       ),
+    //       { body: command[1].data }, // Une commande à la fois par guilde
+    //     );
+    //     Logger.info(
+    //       `Command registered for guild ${commandGuildId}, command: ${command[1].data.name}`,
+    //     );
+    //   }
     // } catch (error) {
     //   Logger.error(this.client.lang.error.loadCommandAPI, error);
     // }
@@ -48,7 +79,6 @@ export class HandlerManager {
   private async loadCmdFile(file: string): Promise<void> {
     try {
       const filePath = file.replace(/\\/g, "/");
-
       const importedModule = await import(`@commands/../../${filePath}`);
 
       await Object.keys(importedModule).forEach((key) => {
@@ -57,7 +87,13 @@ export class HandlerManager {
         if (ExportedClass.prototype instanceof BaseCommand) {
           const command: BaseCommand = new ExportedClass(this.client);
 
-          this.client.commands.set(command.data.name, command);
+          // Générer une clé unique pour chaque commande
+          const commandKey = command.guildIdOnly
+            ? `${command.data.name}_${command.guildIdOnly}` // Clé unique pour les commandes spécifiques à une guild
+            : command.data.name; // Clé pour les commandes globales
+
+          // Ajouter la commande dans la collection avec la clé unique
+          this.client.commands.set(commandKey, command);
 
           Logger.info(this.client.lang.info.loadedCmd, command.data.name);
         }

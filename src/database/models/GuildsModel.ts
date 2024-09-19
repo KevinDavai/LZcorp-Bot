@@ -24,7 +24,6 @@ export interface CustomGuild {
   bypass_roles: string[];
   bypass_channels: string[];
   avis_channel_id: string;
-  isPrestataireOn: boolean;
 }
 
 // Sous-schéma pour les rôles par niveau
@@ -51,7 +50,6 @@ const guildSchema = new Schema<CustomGuild>({
   bypass_roles: { type: [String], default: [] },
   bypass_channels: { type: [String], default: [] },
   avis_channel_id: { type: String, default: null },
-  isPrestataireOn: { type: Boolean, default: false },
 });
 
 // Indexation et validation

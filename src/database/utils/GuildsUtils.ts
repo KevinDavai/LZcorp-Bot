@@ -158,22 +158,6 @@ export async function setAvisChannel(guild: Guild, channelId: string) {
   }
 }
 
-export async function setPrestataireMode(guild: Guild, state: boolean) {
-  const client = guild.client as CustomClient;
-
-  await GuildModel.updateOne(
-    { _id: guild.id },
-    { $set: { isPrestataireOn: state } },
-  );
-
-  const cachedGuild = guildCache.get<CustomGuild>(guild.id);
-
-  if (cachedGuild) {
-    cachedGuild.isPrestataireOn = state;
-    guildCache.set(guild.id, cachedGuild);
-  }
-}
-
 export async function setAntiLink(guild: Guild, state: boolean) {
   const client = guild.client as CustomClient;
 

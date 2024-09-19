@@ -65,7 +65,7 @@ export class EmbedCreator extends BaseCommand {
     super(client, {
       data: new SlashCommandBuilder()
         .setName("embed")
-        .setDescription("Create / delete / list embeds")
+        .setDescription("Créer / Supprimer / lister un embed personalisé")
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addSubcommand((subcommand) =>
           subcommand
