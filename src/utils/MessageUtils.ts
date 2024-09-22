@@ -9,6 +9,7 @@ import {
   Role,
   GuildMember,
   ButtonInteraction,
+  StringSelectMenuInteraction,
 } from "discord.js";
 import { Logger } from "services/Logger";
 import { CustomClient } from "structures/CustomClient";
@@ -19,7 +20,8 @@ export async function sendErrorEmbedWithCountdown(
     | ModalSubmitInteraction
     | ChatInputCommandInteraction
     | CommandInteraction
-    | ButtonInteraction,
+    | ButtonInteraction
+    | StringSelectMenuInteraction,
 
   errors: string[],
 ): Promise<void> {
@@ -62,7 +64,8 @@ export async function sendValidEmbedWithCountdown(
     | ModalSubmitInteraction
     | ChatInputCommandInteraction
     | CommandInteraction
-    | ButtonInteraction,
+    | ButtonInteraction
+    | StringSelectMenuInteraction,
   messages: string[],
   edit?: boolean,
 ): Promise<void> {

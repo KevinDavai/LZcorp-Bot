@@ -12,6 +12,7 @@ import {
   Routes,
 } from "discord.js";
 import { BaseCommand } from "structures/BaseCommand";
+import { BaseButton } from "structures/BaseButton";
 import { CustomClient } from "../structures/CustomClient";
 import { BaseEvent } from "../structures/BaseEvent";
 import { Logger } from "../services/Logger";
@@ -26,6 +27,17 @@ export class HandlerManager {
   public async loadHandlers(): Promise<void> {
     await this.loadEvents();
     await this.loadCmd();
+    await this.loadBtn();
+  }
+
+  private async loadBtn(): Promise<void> {
+    Logger.info(this.client.lang.info.loadingButtons);
+
+    const btnDir = path.resolve(__dirname, "../buttons");
+
+    const files = await glob(`${btnDir}/**/*.{ts,js}`);
+
+    await Promise.all(files.map((file) => this.loadBtnFile(file)));
   }
 
   private async loadCmd(): Promise<void> {
@@ -100,6 +112,28 @@ export class HandlerManager {
       });
     } catch (error) {
       Logger.error(this.client.lang.error.loadEventFile, file, error);
+    }
+  }
+
+  private async loadBtnFile(file: string): Promise<void> {
+    try {
+      const filePath = file.replace(/\\/g, "/");
+      const importedModule = await import(`@buttons/../../${filePath}`);
+
+      await Object.keys(importedModule).forEach((key) => {
+        const ExportedClass = importedModule[key];
+
+        if (ExportedClass.prototype instanceof BaseButton) {
+          const button: BaseButton = new ExportedClass(this.client);
+
+          // Ajouter la commande dans la collection avec la clé unique
+          this.client.buttons.set(button.id, button);
+
+          Logger.info(this.client.lang.info.loadedBtn, button.id);
+        }
+      });
+    } catch (error) {
+      Logger.error(this.client.lang.error.loadBtnFile, file, error);
     }
   }
 

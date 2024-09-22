@@ -1,6 +1,9 @@
 import {
   ChatInputCommandInteraction,
+  CommandInteraction,
+  ComponentType,
   EmbedBuilder,
+  Interaction,
   PermissionFlagsBits,
 } from "discord.js";
 import { CustomClient } from "structures/CustomClient";
@@ -75,6 +78,86 @@ export class Help extends BaseCommand {
       return;
     }
 
+    const SelectMenuBuilder = new StringSelectMenuBuilder()
+      .setCustomId("help_select_menu")
+      .setPlaceholder("Sélectionner une catégorie")
+      .addOptions([
+        {
+          label: "Commandes basiques",
+          value: "basic",
+        },
+        {
+          label: "Commandes Modérations",
+          value: "moderation",
+        },
+        {
+          label: "Commandes Administration",
+          value: "admin",
+        },
+        {
+          label: "Commandes Techniciens",
+          value: "config",
+        },
+      ]);
+
+    const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+      SelectMenuBuilder,
+    );
+
+    const embed = this.createEmbed(interaction, "basic");
+
+    // Envoyer l'embed en réponse à l'interaction
+    await interaction.reply({
+      embeds: [embed],
+      components: [row],
+      ephemeral: true,
+    });
+
+    this.handleComponentInteraction(interaction, embed);
+  }
+
+  private async handleComponentInteraction(
+    interaction: CommandInteraction,
+    embed: EmbedBuilder,
+  ): Promise<void> {
+    const response = await interaction.fetchReply();
+
+    const collectorFilter = (i: Interaction) =>
+      i.user.id === interaction.user.id;
+
+    try {
+      const stringSelectCollector = response.createMessageComponentCollector({
+        componentType: ComponentType.StringSelect,
+        filter: collectorFilter,
+        time: 60_000,
+        max: 1,
+      });
+
+      stringSelectCollector.on("collect", async (i) => {
+        const selectedOption = i.values[0];
+
+        const newEmbed = this.createEmbed(i, selectedOption);
+
+        await interaction.editReply({
+          embeds: [newEmbed],
+        });
+
+        i.deferUpdate();
+
+        this.handleComponentInteraction(interaction, newEmbed);
+      });
+    } catch (error) {
+      Logger.error(
+        "Error handling component interaction while attempting to create a profil",
+        error,
+      );
+    }
+  }
+
+  private createEmbed(
+    interaction: Interaction,
+    selectedOption: string,
+  ): EmbedBuilder {
     // Filtrer les commandes globales
     const allCommands = this.client.commands
       .filter((command) => !command.guildIdOnly) // Exclure les commandes avec un guildIdOnly
@@ -97,6 +180,21 @@ export class Help extends BaseCommand {
         };
       });
 
+    const allCommandesMerge = allCommands.concat(guildCommands);
+
+    const moderatorCmd = ["warn", "kick", "ban", "unban", "mute", "unmute"];
+    const settingsCmd = ["autorole-setup", "settings"];
+    const basicCmd = [
+      "avis",
+      "profil",
+      "classement",
+      "help",
+      "prestataire",
+      "invites",
+      "userinfo",
+    ];
+    const adminCmd = ["giveaway", "blacklist", "embed"];
+
     // Construire l'embed pour afficher les commandes
     const embed = new EmbedBuilder()
       .setTitle("Liste des commandes")
@@ -107,32 +205,46 @@ export class Help extends BaseCommand {
         iconURL: interaction.client.user.displayAvatarURL(),
       });
 
-    // Ajouter les commandes globales à l'embed
-    if (allCommands.length > 0) {
-      embed.addFields({
-        name: "Commandes globales",
-        value: allCommands
-          .map((cmd) => `\`/${cmd.name}\` - ${cmd.description}`)
-          .join("\n"),
-      });
+    switch (selectedOption) {
+      case "basic":
+        embed.addFields({
+          name: "Commandes basiques",
+          value: allCommandesMerge
+            .filter((cmd) => basicCmd.includes(cmd.name))
+            .map((cmd) => `\`/${cmd.name}\` - ${cmd.description}`)
+            .join("\n"),
+        });
+        break;
+      case "moderation":
+        embed.addFields({
+          name: "Commandes de modération",
+          value: allCommandesMerge
+            .filter((cmd) => moderatorCmd.includes(cmd.name))
+            .map((cmd) => `\`/${cmd.name}\` - ${cmd.description}`)
+            .join("\n"),
+        });
+        break;
+      case "admin":
+        embed.addFields({
+          name: "Commandes d'administration",
+          value: allCommandesMerge
+            .filter((cmd) => adminCmd.includes(cmd.name))
+            .map((cmd) => `\`/${cmd.name}\` - ${cmd.description}`)
+            .join("\n"),
+        });
+        break;
+      case "config":
+        embed.addFields({
+          name: "Commandes de configuration",
+          value: allCommandesMerge
+            .filter((cmd) => settingsCmd.includes(cmd.name))
+            .map((cmd) => `\`/${cmd.name}\` - ${cmd.description}`)
+            .join("\n"),
+        });
+        break;
+      default:
+        break;
     }
-
-    // Ajouter les commandes spécifiques à la guilde à l'embed
-    if (guildCommands.length > 0) {
-      embed.addFields({
-        name: `Commandes spécifiques au serveur (${interaction.guild?.name})`,
-        value: guildCommands
-          .map((cmd) => `\`/${cmd.name}\` - ${cmd.description}`)
-          .join("\n"),
-      });
-    }
-
-    // Si aucune commande n'est trouvée, on affiche un message
-    if (allCommands.length === 0 && guildCommands.length === 0) {
-      embed.setDescription("Aucune commande disponible.");
-    }
-
-    // Envoyer l'embed en réponse à l'interaction
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+    return embed;
   }
 }

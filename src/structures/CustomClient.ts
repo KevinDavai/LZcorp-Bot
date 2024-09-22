@@ -14,6 +14,7 @@ import { HandlerManager } from "../handlers/HandlerManager";
 import Config from "../configs/config.json";
 import { JobService } from "../services/JobService";
 import { BaseCommand } from "./BaseCommand";
+import { BaseButton } from "./BaseButton";
 
 export class CustomClient extends Client {
   private readonly _handlerManager: HandlerManager;
@@ -23,6 +24,8 @@ export class CustomClient extends Client {
   private readonly _jobService: JobService;
 
   private readonly _commands: Collection<string, BaseCommand>;
+
+  private readonly _buttons: Collection<string, BaseButton>;
 
   private readonly _cooldowns: Collection<string, Collection<string, number>>;
 
@@ -55,6 +58,7 @@ export class CustomClient extends Client {
     this._cooldowns = new Collection();
     this._messageCache = new Collection();
     this._ongoingCommands = new Collection();
+    this._buttons = new Collection();
   }
 
   public async start(): Promise<void> {
@@ -91,6 +95,10 @@ export class CustomClient extends Client {
 
   public get commands() {
     return this._commands;
+  }
+
+  public get buttons() {
+    return this._buttons;
   }
 
   public get cooldown() {
