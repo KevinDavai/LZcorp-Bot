@@ -2,6 +2,8 @@ import {
   ChatInputCommandInteraction,
   PermissionFlagsBits,
   ChannelType,
+  Colors,
+  EmbedBuilder,
 } from "discord.js";
 import { CustomClient } from "structures/CustomClient";
 import { BaseCommand } from "structures/BaseCommand";
@@ -17,11 +19,18 @@ import {
   setAntiLink,
   setAntiMassMention,
   setAntiSpam,
+  setAutoroleWelcome,
   setAvisChannel,
   setBlackListChannel,
   setBlackListRole,
   setLevelUpChannel,
+  setLogsChannel,
   setSuggestionChannel,
+  setTicketCategory,
+  setTicketCommandeCategory,
+  setTicketLogChannel,
+  setTicketStaffRole,
+  setTranscriptChannel,
   setWelcomeChannel,
   upsertRoleForLevel,
 } from "database/utils/GuildsUtils";
@@ -29,6 +38,7 @@ import {
   sendErrorEmbedWithCountdown,
   sendValidEmbedWithCountdown,
 } from "utils/MessageUtils";
+import { setupEmbedTicket } from "modules/TicketModule";
 
 export class Settings extends BaseCommand {
   public constructor(client: CustomClient) {
@@ -46,6 +56,29 @@ export class Settings extends BaseCommand {
                 .setName("channel")
                 .setDescription("Le channel")
                 .addChannelTypes(ChannelType.GuildText)
+                .setRequired(true),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("logs")
+            .setDescription("Changer le channel de logs")
+            .addChannelOption((option) =>
+              option
+                .setName("channel")
+                .setDescription("Le channel")
+                .addChannelTypes(ChannelType.GuildText)
+                .setRequired(true),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("autorole_welcome")
+            .setDescription("Changer le role à donner aux nouveaux membres")
+            .addRoleOption((option) =>
+              option
+                .setName("role")
+                .setDescription("Le role")
                 .setRequired(true),
             ),
         )
@@ -104,6 +137,90 @@ export class Settings extends BaseCommand {
                 .setDescription(
                   "Changer le channel ou les messages de level up seront envoyés",
                 )
+                .addChannelOption((option) =>
+                  option
+                    .setName("channel")
+                    .setDescription("Le channel")
+                    .addChannelTypes(ChannelType.GuildText)
+                    .setRequired(true),
+                ),
+            ),
+        )
+        .addSubcommandGroup((subcommand) =>
+          subcommand
+            .setName("ticket")
+            .setDescription("Modifier les paramètres du module ticket")
+            .addSubcommand((sub) =>
+              sub
+                .setName("category")
+                .setDescription(
+                  "Changer la catégorie où les tickets seront créés",
+                )
+                .addChannelOption((option) =>
+                  option
+                    .setName("category")
+                    .addChannelTypes(ChannelType.GuildCategory)
+                    .setDescription("La catégorie")
+                    .setRequired(true),
+                ),
+            )
+            .addSubcommand((sub) =>
+              sub
+                .setName("category_commande")
+                .setDescription(
+                  "Changer la catégorie où les tickets commande seront créés",
+                )
+                .addChannelOption((option) =>
+                  option
+                    .setName("category")
+                    .addChannelTypes(ChannelType.GuildCategory)
+                    .setDescription("La catégorie")
+                    .setRequired(true),
+                ),
+            )
+            .addSubcommand((sub) =>
+              sub
+                .setName("setup")
+                .setDescription("Poster l'embed pour créer un ticket")
+                .addStringOption((option) =>
+                  option
+                    .setName("type")
+                    .setDescription("Type de ticket")
+                    .addChoices(
+                      { value: "newsmc", name: "NewsMC" },
+                      { value: "lzcorp_support", name: "LZCorp Support" },
+                      { value: "lzcorp_commande", name: "LZCorp Commande" },
+                    )
+                    .setRequired(true),
+                ),
+            )
+            .addSubcommand((sub) =>
+              sub
+                .setName("staff_role")
+                .setDescription("Quel rôle peut voir les tickets ?")
+                .addRoleOption((option) =>
+                  option
+                    .setName("role")
+                    .setDescription("Le rôle")
+                    .setRequired(true),
+                ),
+            )
+            .addSubcommand((sub) =>
+              sub
+                .setName("logs_channel")
+                .setDescription("Changer le channel de logs des tickets")
+                .addChannelOption((option) =>
+                  option
+                    .setName("channel")
+                    .setDescription("Le channel")
+                    .addChannelTypes(ChannelType.GuildText)
+                    .setRequired(true),
+                ),
+            )
+            .addSubcommand((sub) =>
+              sub
+                .setName("transcript_channel")
+                .setDescription("Changer le channel de transcript des tickets")
                 .addChannelOption((option) =>
                   option
                     .setName("channel")
@@ -267,6 +384,32 @@ export class Settings extends BaseCommand {
         } else {
           await sendErrorEmbedWithCountdown(interaction, [
             "Le channel spécifié n'est pas un channel text ou est introuvable.",
+          ]);
+        }
+      },
+      logs: async () => {
+        const channel = interaction.options.getChannel("channel");
+        if (channel && channel.type === ChannelType.GuildText) {
+          await setLogsChannel(interaction.guild!, channel.id);
+          await sendValidEmbedWithCountdown(interaction, [
+            `Le channel de logs est désormais ${channel}`,
+          ]);
+        } else {
+          await sendErrorEmbedWithCountdown(interaction, [
+            "Le channel spécifié n'est pas un channel text ou est introuvable.",
+          ]);
+        }
+      },
+      autorole_welcome: async () => {
+        const role = interaction.options.getRole("role");
+        if (role) {
+          await setAutoroleWelcome(interaction.guild!, role.id);
+          await sendValidEmbedWithCountdown(interaction, [
+            `Le role à donner aux nouveaux membres est désormais ${role}`,
+          ]);
+        } else {
+          await sendErrorEmbedWithCountdown(interaction, [
+            "Le role spécifié est invalide.",
           ]);
         }
       },
@@ -496,6 +639,84 @@ export class Settings extends BaseCommand {
             await setLevelUpChannel(interaction.guild!, channel.id);
             await sendValidEmbedWithCountdown(interaction, [
               `Le channel de level up est désormais ${channel}`,
+            ]);
+          } else {
+            await sendErrorEmbedWithCountdown(interaction, [
+              "Le channel spécifié n'est pas un channel text ou est introuvable.",
+            ]);
+          }
+        },
+      },
+      ticket: {
+        category: async () => {
+          const category = interaction.options.getChannel("category", true);
+          if (category && category.type === ChannelType.GuildCategory) {
+            await setTicketCategory(interaction.guild!, category.id);
+            await sendValidEmbedWithCountdown(interaction, [
+              `La catégorie des tickets est désormais ${category}`,
+            ]);
+          } else {
+            await sendErrorEmbedWithCountdown(interaction, [
+              "La catégorie spécifiée n'est pas une catégorie ou est introuvable.",
+            ]);
+          }
+        },
+        category_commande: async () => {
+          const category = interaction.options.getChannel("category", true);
+          if (category && category.type === ChannelType.GuildCategory) {
+            await setTicketCommandeCategory(interaction.guild!, category.id);
+            await sendValidEmbedWithCountdown(interaction, [
+              `La catégorie des tickets commande est désormais ${category}`,
+            ]);
+          } else {
+            await sendErrorEmbedWithCountdown(interaction, [
+              "La catégorie spécifiée n'est pas une catégorie ou est introuvable.",
+            ]);
+          }
+        },
+        setup: async () => {
+          const type = interaction.options.getString("type", true);
+
+          try {
+            await setupEmbedTicket(interaction, type);
+          } catch (error) {
+            await sendErrorEmbedWithCountdown(interaction, [
+              "Une erreur est survenue lors de la création de l'embed pour le ticket",
+            ]);
+          }
+        },
+        staff_role: async () => {
+          const role = interaction.options.getRole("role", true);
+          if (role) {
+            await setTicketStaffRole(interaction.guild!, role.id);
+            await sendValidEmbedWithCountdown(interaction, [
+              `Les personnes ayant le rôle ${role} pourront voir les tickets.`,
+            ]);
+          } else {
+            await sendErrorEmbedWithCountdown(interaction, [
+              "Le role spécifié est invalide.",
+            ]);
+          }
+        },
+        logs_channel: async () => {
+          const channel = interaction.options.getChannel("channel", true);
+          if (channel && channel.type === ChannelType.GuildText) {
+            await setTicketLogChannel(interaction.guild!, channel.id);
+            await sendValidEmbedWithCountdown(interaction, [
+              `Le channel de logs des tickets est désormais ${channel}`,
+            ]);
+          } else {
+            await sendErrorEmbedWithCountdown(interaction, [
+              "Le channel spécifié n'est pas un channel text ou est introuvable.",
+            ]);
+          }
+        },
+        transcript_channel: async () => {
+          const channel = interaction.options.getChannel("channel", true);
+          if (channel && channel.type === ChannelType.GuildText) {
+            await setTranscriptChannel(interaction.guild!, channel.id);
+            await sendValidEmbedWithCountdown(interaction, [
+              `Le channel de transcript des tickets est désormais ${channel}`,
             ]);
           } else {
             await sendErrorEmbedWithCountdown(interaction, [

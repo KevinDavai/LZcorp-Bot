@@ -26,7 +26,11 @@
     "antiMassMentionUpdate": "AntiMassMention status updated for guild id: {0}",
     "avisChannelUpdate": "Le channel d'avis a ete mis a jour pour la guild {0}",
     "loadingButtons": "Starting to load buttons...",
-    "loadedBtn": "Button \"{0}\" loaded successfully."
+    "loadedBtn": "Button \"{0}\" loaded successfully.",
+    "ticketCategoryUpdate": "Ticket category updated for guild id: {0}",
+    "ticketRoleUpdate": "Ticket role updated for guild id: {0}",
+    "ticketLogChannelUpdate": "Ticket log channel updated for guild id: {0}",
+    "autoroleWelcomeUpdate": "Autorole welcome updated for guild id: {0}"
   },
   "error": {
     "unspecified": "An unspecified error occurred.",
@@ -84,6 +88,11 @@
     "addBypassChannelToGuild": "Erreur lors de l'ajout du channel de bypass pour la guild: {0}, channelId: {1}, error: {2}",
     "removeBypassChannelToGuild": "Erreur lors de la suppression du channel de bypass pour la guild: {0}, channelId: {1}, error: {2}",
     "avisChannelUpdate": "Erreur lors de la mise à jour du channel d'avis pour la guild: {0}, error: {1}",
-    "loadBtnFile": "Failed to load button file: {0}, error: {1}"
+    "loadBtnFile": "Failed to load button file: {0}, error: {1}",
+    "ticketCategoryUpdate": "Erreur lors de la mise à jour de la catégorie de ticket pour la guild: {0}, error: {1}",
+    "ticketRoleUpdate": "Erreur lors de la mise à jour du role de ticket pour la guild: {0}, error: {1}",
+    "ticketLogChannelUpdate": "Erreur lors de la mise à jour du channel de log de ticket pour la guild: {0}, error: {1}",
+    "autoroleWelcomeUpdate": "Erreur lors de la mise à jour du role d'autorole pour la guild: {0}, error: {1}",
+    "giveAutorole": "Erreur lors de l'ajout du role d'autorole pour l'utilisateur: {0}, guild: {1}, error: {2}"
   }
 }

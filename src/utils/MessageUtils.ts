@@ -10,6 +10,7 @@ import {
   GuildMember,
   ButtonInteraction,
   StringSelectMenuInteraction,
+  GuildBasedChannel,
 } from "discord.js";
 import { Logger } from "services/Logger";
 import { CustomClient } from "structures/CustomClient";
@@ -151,6 +152,29 @@ export async function getOrFetchChannelById(
   }
 
   return channel;
+}
+
+export async function getOrFetchCategoryById(
+  guild: Guild, // Le paramètre peut être un `CustomClient` ou un `Guild`
+  categoryId: string,
+): Promise<GuildBasedChannel | undefined> {
+  // Si le premier paramètre est une instance de Guild
+  let category = guild.channels.cache.get(categoryId);
+
+  if (!category) {
+    try {
+      const fetchedCategory = await guild.channels.fetch(categoryId);
+      if (fetchedCategory) {
+        category = fetchedCategory;
+      } else {
+        Logger.error(Logs.error.channelByIdNotFound, categoryId);
+      }
+    } catch (error) {
+      Logger.error(Logs.error.fetchChannelById, categoryId, error);
+    }
+  }
+
+  return category;
 }
 
 export async function getOrFetchRoleById(

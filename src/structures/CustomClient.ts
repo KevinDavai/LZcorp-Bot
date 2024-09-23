@@ -46,6 +46,7 @@ export class CustomClient extends Client {
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildPresences,
         GatewayIntentBits.GuildInvites,
+        GatewayIntentBits.GuildModeration,
       ],
     });
 

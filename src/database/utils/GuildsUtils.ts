@@ -62,6 +62,30 @@ export async function checkNewGuilds(client: CustomClient): Promise<void> {
   });
 }
 
+export async function setLogsChannel(guild: Guild, channelId: string) {
+  const client = guild.client as CustomClient;
+
+  try {
+    // Mise à jour directe du welcome_channel_id pour la guilde donnée
+    await GuildModel.updateOne(
+      { _id: guild.id }, // Filtre : on sélectionne la guilde par son _id
+      { $set: { logs_channel_id: channelId } }, // Mise à jour du welcome_channel_id
+    );
+
+    const cachedGuild = guildCache.get<CustomGuild>(guild.id);
+
+    if (cachedGuild) {
+      // Si la guilde est dans le cache, on met à jour uniquement le welcome_channel_id
+      cachedGuild.logs_channel_id = channelId;
+      guildCache.set(guild.id, cachedGuild); // Met à jour le cache
+    }
+
+    Logger.info(client.lang.info.welcomeChannelUpdate, guild.id);
+  } catch (error) {
+    Logger.error(client.lang.error.welcomeChannelUpdate, guild.id, error);
+  }
+}
+
 export async function setWelcomeChannel(guild: Guild, channelId: string) {
   const client = guild.client as CustomClient;
 
@@ -83,6 +107,105 @@ export async function setWelcomeChannel(guild: Guild, channelId: string) {
     Logger.info(client.lang.info.welcomeChannelUpdate, guild.id);
   } catch (error) {
     Logger.error(client.lang.error.welcomeChannelUpdate, guild.id, error);
+  }
+}
+
+export async function setTicketLogChannel(guild: Guild, channelId: string) {
+  const client = guild.client as CustomClient;
+
+  try {
+    // Mise à jour directe du welcome_channel_id pour la guilde donnée
+    await GuildModel.updateOne(
+      { _id: guild.id }, // Filtre : on sélectionne la guilde par son _id
+      { $set: { ticket_log_channel_id: channelId } }, // Mise à jour du welcome_channel_id
+    );
+
+    const cachedGuild = guildCache.get<CustomGuild>(guild.id);
+
+    if (cachedGuild) {
+      // Si la guilde est dans le cache, on met à jour uniquement le welcome_channel_id
+      cachedGuild.ticket_log_channel_id = channelId;
+      guildCache.set(guild.id, cachedGuild); // Met à jour le cache
+    }
+
+    Logger.info(client.lang.info.ticketLogChannelUpdate, guild.id);
+  } catch (error) {
+    Logger.error(client.lang.error.ticketLogChannelUpdate, guild.id, error);
+  }
+}
+
+export async function setTranscriptChannel(guild: Guild, channelId: string) {
+  const client = guild.client as CustomClient;
+
+  try {
+    // Mise à jour directe du welcome_channel_id pour la guilde donnée
+    await GuildModel.updateOne(
+      { _id: guild.id }, // Filtre : on sélectionne la guilde par son _id
+      { $set: { ticket_transcript_channel_id: channelId } }, // Mise à jour du welcome_channel_id
+    );
+
+    const cachedGuild = guildCache.get<CustomGuild>(guild.id);
+
+    if (cachedGuild) {
+      // Si la guilde est dans le cache, on met à jour uniquement le welcome_channel_id
+      cachedGuild.ticket_transcript_channel_id = channelId;
+      guildCache.set(guild.id, cachedGuild); // Met à jour le cache
+    }
+
+    Logger.info(client.lang.info.ticketLogChannelUpdate, guild.id);
+  } catch (error) {
+    Logger.error(client.lang.error.ticketLogChannelUpdate, guild.id, error);
+  }
+}
+
+export async function setTicketCommandeCategory(
+  guild: Guild,
+  categoryID: string,
+) {
+  const client = guild.client as CustomClient;
+
+  try {
+    // Mise à jour directe du welcome_channel_id pour la guilde donnée
+    await GuildModel.updateOne(
+      { _id: guild.id }, // Filtre : on sélectionne la guilde par son _id
+      { $set: { ticket_commande_category_id: categoryID } }, // Mise à jour du welcome_channel_id
+    );
+
+    const cachedGuild = guildCache.get<CustomGuild>(guild.id);
+
+    if (cachedGuild) {
+      // Si la guilde est dans le cache, on met à jour uniquement le welcome_channel_id
+      cachedGuild.ticket_commande_category_id = categoryID;
+      guildCache.set(guild.id, cachedGuild); // Met à jour le cache
+    }
+
+    Logger.info(client.lang.info.ticketCategoryUpdate, guild.id);
+  } catch (error) {
+    Logger.error(client.lang.error.ticketCategoryUpdate, guild.id, error);
+  }
+}
+
+export async function setTicketCategory(guild: Guild, categoryID: string) {
+  const client = guild.client as CustomClient;
+
+  try {
+    // Mise à jour directe du welcome_channel_id pour la guilde donnée
+    await GuildModel.updateOne(
+      { _id: guild.id }, // Filtre : on sélectionne la guilde par son _id
+      { $set: { ticket_category_id: categoryID } }, // Mise à jour du welcome_channel_id
+    );
+
+    const cachedGuild = guildCache.get<CustomGuild>(guild.id);
+
+    if (cachedGuild) {
+      // Si la guilde est dans le cache, on met à jour uniquement le welcome_channel_id
+      cachedGuild.ticket_category_id = categoryID;
+      guildCache.set(guild.id, cachedGuild); // Met à jour le cache
+    }
+
+    Logger.info(client.lang.info.ticketCategoryUpdate, guild.id);
+  } catch (error) {
+    Logger.error(client.lang.error.ticketCategoryUpdate, guild.id, error);
   }
 }
 
@@ -293,6 +416,55 @@ export async function setBlackListRole(guild: Guild, roleId: string) {
     Logger.error(client.lang.error.blackListRoleUpdate, guild.id, error);
   }
 }
+
+export async function setAutoroleWelcome(guild: Guild, roleId: string) {
+  const client = guild.client as CustomClient;
+
+  try {
+    // Mise à jour directe du welcome_channel_id pour la guilde donnée
+    await GuildModel.updateOne(
+      { _id: guild.id }, // Filtre : on sélectionne la guilde par son _id
+      { $set: { welcome_autorole_id: roleId } }, // Mise à jour du blacklist_channel_id
+    );
+
+    const cachedGuild = guildCache.get<CustomGuild>(guild.id);
+
+    if (cachedGuild) {
+      // Si la guilde est dans le cache, on met à jour uniquement le welcome_channel_id
+      cachedGuild.welcome_autorole_id = roleId;
+      guildCache.set(guild.id, cachedGuild); // Met à jour le cache
+    }
+
+    Logger.info(client.lang.info.autoroleWelcomeUpdate, guild.id);
+  } catch (error) {
+    Logger.error(client.lang.error.autoroleWelcomeUpdate, guild.id, error);
+  }
+}
+
+export async function setTicketStaffRole(guild: Guild, roleId: string) {
+  const client = guild.client as CustomClient;
+
+  try {
+    // Mise à jour directe du welcome_channel_id pour la guilde donnée
+    await GuildModel.updateOne(
+      { _id: guild.id }, // Filtre : on sélectionne la guilde par son _id
+      { $set: { ticket_role_id: roleId } }, // Mise à jour du blacklist_channel_id
+    );
+
+    const cachedGuild = guildCache.get<CustomGuild>(guild.id);
+
+    if (cachedGuild) {
+      // Si la guilde est dans le cache, on met à jour uniquement le welcome_channel_id
+      cachedGuild.ticket_role_id = roleId;
+      guildCache.set(guild.id, cachedGuild); // Met à jour le cache
+    }
+
+    Logger.info(client.lang.info.ticketRoleUpdate, guild.id);
+  } catch (error) {
+    Logger.error(client.lang.error.ticketRoleUpdate, guild.id, error);
+  }
+}
+
 export async function getGuildSettings(guildId: string) {
   try {
     // Vérifie si les paramètres du serveur sont dans le cache

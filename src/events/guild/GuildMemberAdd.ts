@@ -1,6 +1,6 @@
 import { Events, Guild, GuildMember } from "discord.js";
 import { createGuild, getGuildSettings } from "database/utils/GuildsUtils";
-import { sendWelcomeEmbed } from "modules/welcomeModule";
+import { giveAutorole, sendWelcomeEmbed } from "modules/welcomeModule";
 import { CustomInvite, InviteModel } from "database/models/InviteModel";
 import { getGuildInvites } from "database/utils/InviteUtils";
 import { inviteModule } from "modules/InvitesModule";
@@ -21,8 +21,12 @@ export class GuildMemberAdd extends BaseEvent {
 
     await inviteModule(member);
 
-    if (!guildSettings.welcome_channel_id) return;
+    if (guildSettings.welcome_channel_id) {
+      await sendWelcomeEmbed(member, guildSettings.welcome_channel_id);
+    }
 
-    await sendWelcomeEmbed(member, guildSettings.welcome_channel_id);
+    if (guildSettings.welcome_autorole_id) {
+      await giveAutorole(member, guildSettings.welcome_autorole_id);
+    }
   }
 }

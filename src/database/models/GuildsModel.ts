@@ -13,6 +13,8 @@ export interface CustomGuild {
   owner_id: string;
   suggestion_channel_id?: string;
   welcome_channel_id?: string;
+  welcome_autorole_id?: string;
+  logs_channel_id?: string;
   role_per_level?: RolePerLevel[];
   levelup_channel_id?: string;
   blacklist_channel_id?: string;
@@ -24,6 +26,11 @@ export interface CustomGuild {
   bypass_roles: string[];
   bypass_channels: string[];
   avis_channel_id: string;
+  ticket_category_id: string;
+  ticket_commande_category_id: string;
+  ticket_role_id: string;
+  ticket_log_channel_id: string;
+  ticket_transcript_channel_id: string;
 }
 
 // Sous-schéma pour les rôles par niveau
@@ -37,12 +44,14 @@ const guildSchema = new Schema<CustomGuild>({
   _id: { type: String },
   name: { type: String, required: true },
   owner_id: { type: String, required: true },
-  suggestion_channel_id: { type: String },
-  welcome_channel_id: { type: String },
+  suggestion_channel_id: { type: String, default: null },
+  welcome_channel_id: { type: String, default: null },
+  welcome_autorole_id: { type: String, default: null },
+  logs_channel_id: { type: String, default: null },
   role_per_level: [rolePerLevelSchema], // Utilisation du sous-schéma
-  levelup_channel_id: { type: String },
-  blacklist_channel_id: { type: String },
-  blacklist_role_id: { type: String },
+  levelup_channel_id: { type: String, default: null },
+  blacklist_channel_id: { type: String, default: null },
+  blacklist_role_id: { type: String, default: null },
   antilink: { type: Boolean, default: false },
   antispam: { type: Boolean, default: false },
   antibadwords: { type: Boolean, default: false },
@@ -50,6 +59,11 @@ const guildSchema = new Schema<CustomGuild>({
   bypass_roles: { type: [String], default: [] },
   bypass_channels: { type: [String], default: [] },
   avis_channel_id: { type: String, default: null },
+  ticket_category_id: { type: String, default: null },
+  ticket_commande_category_id: { type: String, default: null },
+  ticket_role_id: { type: String, default: null },
+  ticket_log_channel_id: { type: String, default: null },
+  ticket_transcript_channel_id: { type: String, default: null },
 });
 
 // Indexation et validation

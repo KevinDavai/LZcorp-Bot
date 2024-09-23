@@ -18,7 +18,7 @@ export async function createUser(
   guildId: string,
 ): Promise<CustomUser> {
   const newUser = new UserModel({
-    _id: userId,
+    userId,
     guildId,
     level: 0,
     xp: 0,
@@ -35,7 +35,7 @@ export async function deleteUser(
   userId: string,
   guildId: string,
 ): Promise<void> {
-  await UserModel.findOneAndDelete({ _id: userId, guildId });
+  await UserModel.findOneAndDelete({ userId, guildId });
   const cacheKey = `${userId}-${guildId}`;
   userCache.del(cacheKey);
 }
@@ -50,11 +50,11 @@ export async function getUserById(userId: string, guildId: string) {
       return userCached;
     }
 
-    let user = await UserModel.findOne({ _id: userId, guildId });
+    let user = await UserModel.findOne({ userId, guildId });
 
     if (!user) {
       user = await UserModel.create({
-        _id: userId,
+        userId,
         guildId,
       });
     }
@@ -75,15 +75,15 @@ export async function addWarnToUser(
   try {
     // Sauvegarde dans la DB
     const newUser = await UserModel.findOneAndUpdate(
-      { _id: user._id, guildId: user.guildId },
+      { userId: user.userId, guildId: user.guildId },
       { $push: { warnings: { id: user.warnings.length + 1, reason } } },
       { new: true },
     );
 
-    const cacheKey = `${user._id}-${user.guildId}`;
+    const cacheKey = `${user.userId}-${user.guildId}`;
     userCache.set(cacheKey, newUser);
   } catch (error) {
-    Logger.error(Logs.error.addWarnToUser, user._id, user.guildId, error);
+    Logger.error(Logs.error.addWarnToUser, user.userId, user.guildId, error);
     throw error;
   }
 }
@@ -95,15 +95,15 @@ export async function removeWarnToUser(
   try {
     // Sauvegarde dans la DB
     const newUser = await UserModel.findOneAndUpdate(
-      { _id: user._id, guildId: user.guildId },
+      { userId: user.userId, guildId: user.guildId },
       { $pull: { warnings: { id: warnId } } },
       { new: true },
     );
 
-    const cacheKey = `${user._id}-${user.guildId}`;
+    const cacheKey = `${user.userId}-${user.guildId}`;
     userCache.set(cacheKey, newUser);
   } catch (error) {
-    Logger.error(Logs.error.removeWarnToUser, user._id, user.guildId, error);
+    Logger.error(Logs.error.removeWarnToUser, user.userId, user.guildId, error);
     throw error;
   }
 }
@@ -127,7 +127,7 @@ export async function setBlackListedStatus(
 
     // Find the user and update their blacklist status
     const userDetail = await UserModel.findOneAndUpdate(
-      { _id: userId, guildId },
+      { userId, guildId },
       updateData,
       { new: true }, // Return the updated document
     );
@@ -158,7 +158,10 @@ export async function addXP(
   const now = new Date().getTime();
   const lastXP = customUser.lastXP ? new Date(customUser.lastXP).getTime() : 0;
 
-  if (now - lastXP < XP_COOLDOWN && userDetail._id !== "644117619514802177") {
+  if (
+    now - lastXP < XP_COOLDOWN &&
+    userDetail.userId !== "644117619514802177"
+  ) {
     return; // Empêche l'ajout d'XP si l'utilisateur essaie de gagner XP trop rapidement
   }
 
@@ -183,12 +186,12 @@ export async function addXP(
 
   // Sauvegarde dans la DB
   await UserModel.findOneAndUpdate(
-    { _id: customUser._id, guildId: customUser.guildId },
+    { userId: customUser.userId, guildId: customUser.guildId },
     { xp: customUser.xp, level: customUser.level, lastXP: customUser.lastXP }, // Inclure lastXP dans la mise à jour
   );
 
   // Optionnellement, mettre à jour le cache
-  const cacheKey = `${customUser._id}-${customUser.guildId}`;
+  const cacheKey = `${customUser.userId}-${customUser.guildId}`;
   userCache.set(cacheKey, customUser);
 
   if (levelUp) {
@@ -251,7 +254,7 @@ export async function handleLevelUp(
     await sendLevelUpNotification(
       client,
       guildSettings.levelup_channel_id,
-      customUser._id,
+      customUser.userId,
       customUser.level,
     );
   }
@@ -265,7 +268,7 @@ export async function handleLevelUp(
     if (roleConfig) {
       await assignRoleToMember(
         guild,
-        customUser._id,
+        customUser.userId,
         customUser.level,
         roleConfig.role_id,
       );

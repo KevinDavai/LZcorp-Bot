@@ -1,27 +1,69 @@
 import { EmbedBuilder, GuildMember } from "discord.js";
 import { Logger } from "services/Logger";
-import { getOrFetchChannelById } from "utils/MessageUtils";
+import { getOrFetchChannelById, getOrFetchRoleById } from "utils/MessageUtils";
 import { CustomClient } from "structures/CustomClient";
 import Logs from "../lang/logs.json";
+
+export async function giveAutorole(
+  member: GuildMember,
+  roleId: string,
+): Promise<void> {
+  try {
+    // Récupère le rôle
+    const role = await getOrFetchRoleById(member.guild, roleId);
+
+    // Si le rôle n'est pas trouvé, on lève une erreur
+    if (!role) {
+      throw new Error(`Role with ID ${roleId} not found`);
+    }
+
+    // Ajoute le rôle au membre
+    await member.roles.add(role);
+  } catch (error) {
+    Logger.error(Logs.error.giveAutorole, member.displayName, error);
+    throw error;
+  }
+}
 
 export async function sendWelcomeEmbed(
   member: GuildMember,
   welcomeChannelId: string,
 ): Promise<void> {
+  const welcomeEmbed = new EmbedBuilder();
+
   try {
-    const welcomeEmbed = new EmbedBuilder()
-      .setTitle(`» Bienvenue __${member.displayName}__ sur LZCorp !`)
-      .setDescription(
-        `➜ Commence dès maintenant et rend toi sur <#760745745195728946>
+    if (member.guild.id === "715272187669512234") {
+      welcomeEmbed
+        .setTitle(`» Bienvenue __${member.displayName}__ sur LZCorp !`)
+        .setDescription(
+          `➜ Commence dès maintenant et rend toi sur <#760745745195728946>
           ➜ Pour avoir accès au support <#929743910027272322>
           ➜ Pour pouvoir passer commande <#929752200085930064>
           ➜ Pour avoir nos prix <#1192845767539441825>`,
-      )
-      .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
-        iconURL: member.client.user.displayAvatarURL(),
-      })
-      .setColor("#87CEFA");
+        )
+        .setFooter({
+          text: "© Copyright | LZCorp",
+          iconURL: member.client.user.displayAvatarURL(),
+        })
+        .setColor("#87CEFA");
+    } else if (member.guild.id === "1259894025050128545") {
+      welcomeEmbed
+        .setTitle(
+          `» Bienvenue __${member.displayName}__ sur NewsMC - Communautaire !`,
+        )
+        .setDescription(
+          `Ici, vous trouverez tout ce qui touche à Minecraft !
+        
+        ➜ Pour demander de l'aide > <#760745745195728946>
+        ➜ Si vous cherchez un service en particulier > <#929743910027272322>
+        ➜ Pour voir notre règlement > <#929752200085930064>`,
+        )
+        .setFooter({
+          text: "© Copyright | NewsMC",
+          iconURL: member.client.user.displayAvatarURL(),
+        })
+        .setColor("#87CEFA");
+    }
 
     // Essaye de récupérer le canal de bienvenue
     const welcomeChannel = await getOrFetchChannelById(
