@@ -35,7 +35,7 @@ export class SkyBlockBtn extends BaseButton {
     }
 
     const member = interaction.member as GuildMember;
-    const roleId = "1286357534638215249"; // Remplacez par l'ID réel du rôle
+    const roleId = "1275245950750818364"; // Remplacez par l'ID réel du rôle
 
     try {
       if (member.roles.cache.has(roleId)) {

@@ -6,6 +6,7 @@ import {
   deleteUserFromInvite,
   getGuildInvites,
 } from "database/utils/InviteUtils";
+import { guildMemberLeft } from "modules/LogsModule";
 import { CustomClient } from "../../structures/CustomClient";
 import { BaseEvent } from "../../structures/BaseEvent";
 
@@ -20,5 +21,6 @@ export class GuildMemberRemove extends BaseEvent {
 
   async execute(member: GuildMember) {
     await deleteUserFromInvite(member.user.id);
+    await guildMemberLeft(this.client, member);
   }
 }

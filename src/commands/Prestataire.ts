@@ -13,6 +13,7 @@ import { ActionRowBuilder, SlashCommandBuilder } from "@discordjs/builders";
 
 import {
   getOrFetchChannelById,
+  getOrFetchMemberById,
   sendErrorEmbedWithCountdown,
   sendValidEmbedWithCountdown,
 } from "utils/MessageUtils";
@@ -39,10 +40,10 @@ export class Prestataire extends BaseCommand {
                 .setDescription("Nom du prestataire.")
                 .setRequired(true),
             ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand.setName("list").setDescription("Lister les prestataires."),
         ),
-      // .addSubcommand((subcommand) =>
-      //   subcommand.setName("list").setDescription("Lister les prestataires."),
-      // ),
     });
     this.guildIdOnly = "916487743004114974";
   }
@@ -100,7 +101,24 @@ export class Prestataire extends BaseCommand {
   private async listPrestataire(
     interaction: ChatInputCommandInteraction,
   ): Promise<void> {
-    // Tableau d'user id des prestataires
+    const rolesPriority = [
+      "953056804215095346", // Communication
+      "953056807188836422", // Trailer/Monteur vidéo
+      "953056811001462885", // Graphisme
+      "953057826652180490", // Dessinateurs
+      "1137408301492093009", // Pixel Art
+      "953059691699773530", // Rédacteur
+      "953264702652305499", // Développement Java
+      "953264709707116574", // Développement Web
+      "958110292670312570", // Développement Bot
+      "974776075596988436", // Sys Admin
+      "978217560623435776", // Configurateur
+      "958113912820232252", // Constructeurs
+      "963199682534854656", // Modélisation
+      "964134348880244766", // Game Designer
+      "1153331052711006361", // Vérificateur
+    ];
+
     const prestataires = await getAllProfilUserName(interaction.guildId!);
 
     if (prestataires.length === 0) {
@@ -111,26 +129,120 @@ export class Prestataire extends BaseCommand {
       return;
     }
 
-    const embed = new EmbedBuilder()
+    const usersPerPage = 10; // Nombre d'utilisateurs à afficher par page
+    const pages: EmbedBuilder[] = [];
+    const roleGroups: { [roleId: string]: string[] } = {};
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const userId of prestataires) {
+      // eslint-disable-next-line no-await-in-loop
+      const member = await interaction.guild!.members.fetch(userId);
+      let roleFound = false;
+
+      for (let i = 0; i < rolesPriority.length; i += 1) {
+        const roleId = rolesPriority[i];
+        if (member.roles.cache.has(roleId)) {
+          if (!roleGroups[roleId]) {
+            roleGroups[roleId] = [];
+          }
+          roleGroups[roleId].push(`<@${member.user.id}>`);
+          roleFound = true;
+          break;
+        }
+      }
+
+      if (!roleFound) {
+        if (!roleGroups.noRole) {
+          roleGroups.noRole = [];
+        }
+        roleGroups.noRole.push(`<@${member.user.id}>`);
+      }
+    }
+
+    const roleEntries = Object.entries(roleGroups);
+    let currentEmbed = new EmbedBuilder()
       .setTitle("📝 | Prestataires disponibles")
-      .setDescription("Voici la liste des prestataires disponibles :")
-      .setColor("#87CEFA") // Couleur verte
+      .setColor("#87CEFA")
       .setFooter({
         text: "© Copyright LZCorp | NewsMC",
         iconURL: interaction.client.user.displayAvatarURL(),
       });
 
-    // Ajout des prestataires dans l'embed sous forme de champ
-    prestataires.forEach((username, index) => {
-      embed.addFields({
-        name: `Prestataire ${index + 1}`,
-        value: "<@" + username + ">",
-        inline: true,
+    let userCount = 0;
+
+    roleEntries.forEach(([roleId, users]) => {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const user of users) {
+        if (userCount >= usersPerPage) {
+          pages.push(currentEmbed);
+          currentEmbed = new EmbedBuilder()
+            .setTitle("📝 | Prestataires disponibles")
+            .setColor("#87CEFA")
+            .setFooter({
+              text: "© Copyright LZCorp | NewsMC",
+              iconURL: interaction.client.user.displayAvatarURL(),
+            });
+          userCount = 0; // Réinitialiser le compteur d'utilisateurs
+        }
+
+        currentEmbed.addFields({
+          name: " ",
+          value: `${user} | <@&${roleId}>`,
+          inline: false,
+        });
+        userCount += 1;
+      }
+    });
+
+    if (currentEmbed.data.fields && currentEmbed.data.fields.length > 0) {
+      pages.push(currentEmbed);
+    }
+
+    const getButtons = (pageIndex: number) =>
+      new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder()
+          .setCustomId("previous")
+          .setLabel("Précédent")
+          .setStyle(ButtonStyle.Primary)
+          .setDisabled(pageIndex === 0),
+        new ButtonBuilder()
+          .setCustomId("next")
+          .setLabel("Suivant")
+          .setStyle(ButtonStyle.Primary)
+          .setDisabled(pageIndex === pages.length - 1),
+      );
+
+    let currentPage = 0;
+    const message = await interaction.reply({
+      embeds: [pages[currentPage]],
+      components: [getButtons(currentPage)],
+      fetchReply: true,
+    });
+
+    const collector = message.createMessageComponentCollector({
+      componentType: ComponentType.Button,
+      time: 60000,
+      filter: (i) => i.user.id === interaction.user.id,
+    });
+
+    collector.on("collect", async (i) => {
+      if (i.customId === "previous") {
+        currentPage -= 1;
+      } else if (i.customId === "next") {
+        currentPage += 1;
+      }
+
+      await i.update({
+        embeds: [pages[currentPage]],
+        components: [getButtons(currentPage)],
       });
     });
 
-    // Envoi de l'embed
-    await interaction.reply({ embeds: [embed] });
+    collector.on("end", () => {
+      message.edit({
+        components: [],
+      });
+    });
   }
 
   private createButtonRow(

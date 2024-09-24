@@ -1,3 +1,5 @@
+// eslint-disable-next-line eslint-comments/disable-enable-pair
+/* eslint-disable no-param-reassign */
 // utils/MessageUtils.ts
 import {
   EmbedBuilder,
@@ -11,9 +13,15 @@ import {
   ButtonInteraction,
   StringSelectMenuInteraction,
   GuildBasedChannel,
+  ChannelType,
+  PermissionsBitField,
+  PermissionFlagsBits,
+  APIEmbed,
 } from "discord.js";
 import { Logger } from "services/Logger";
 import { CustomClient } from "structures/CustomClient";
+import { get } from "mongoose";
+import { getGuildSettings } from "database/utils/GuildsUtils";
 import Logs from "../lang/logs.json";
 
 export async function sendErrorEmbedWithCountdown(
@@ -249,4 +257,53 @@ export async function getOrFetchMessageById(
   }
 
   return message;
+}
+
+export async function sendLog(client: CustomClient, guild: Guild, msg: string) {
+  let embed: EmbedBuilder | null = null;
+
+  // if (debug) console.log(`Module: ${description.name} | send - computed options:`, options)
+
+  const guildSettings = await getGuildSettings(guild.id);
+
+  const channel = await getOrFetchChannelById(
+    guild,
+    guildSettings.logs_channel_id,
+  );
+
+  if (channel && channel.type === ChannelType.GuildText) {
+    const bot = channel.guild.members.me;
+
+    if (!bot) {
+      Logger.error(
+        `The Bot is not in the server "${guild.name}" (${guild.id})`,
+      );
+      return;
+    }
+
+    if (channel.permissionsFor(bot).has(PermissionFlagsBits.SendMessages)) {
+      if (typeof msg === "object") {
+        // Embed
+        if (channel.permissionsFor(bot).has(PermissionFlagsBits.EmbedLinks)) {
+          embed = msg;
+          channel
+            .send({
+              embeds: [embed as APIEmbed],
+            })
+            .catch(console.error);
+        } else {
+          Logger.error(
+            `The Bot doesn't have the permission EMBED_LINKS to the configured channel "${channel.name}" on server "${guild.name}" (${guild.id})`,
+          );
+        }
+      } else {
+        // Send the Message
+        channel.send(msg).catch(console.error);
+      }
+    } else {
+      Logger.error(
+        `The Bot doesn't have the permission to send public message to the configured channel "${channel.name}" on server "${guild.name}" (${guild.id})`,
+      );
+    }
+  }
 }

@@ -94,3 +94,58 @@ export async function getAllProfilUserName(guildId: string): Promise<string[]> {
     throw error;
   }
 }
+
+export async function generateProfiles() {
+  const profiles: CustomProfil[] = [];
+
+  for (let i = 0; i < 23; i += 1) {
+    const embed = new EmbedBuilder()
+      .setTitle("⭐⭐⭐ **Community-Manager**")
+      .setDescription(
+        "Je dessine depuis toujours c'est ma plus grande passion dans la vie, de manière générale j'ai 4 ans d'expérience en graphisme. Je travaille sur Minecraft depuis 2023, en grande partie avec le serveur Atlantis.",
+      )
+      .setURL("https://www.google.com")
+      .setAuthor({
+        name: `Profil de user_${i}`,
+        iconURL: `https://cdn.discordapp.com/avatars/user_id_${i}/avatar_hash.webp`,
+      })
+      .setThumbnail(
+        `https://cdn.discordapp.com/avatars/user_id_${i}/avatar_hash.webp`,
+      )
+      .addFields(
+        {
+          name: "Document contractuel",
+          value: "• ``Cahier des charges`` \n• ``Devis`` \n• ``Factures``",
+          inline: true,
+        },
+        {
+          name: "Réseaux sociaux",
+          value:
+            "• [Instagram](https://www.instagram.com/)\n• [Twitter](https://twitter.com/)\n• [Portfolio](https://www.lzcorp.fr/)",
+          inline: true,
+        },
+      )
+      .setColor(16777215)
+      .setFooter({
+        text: "© Copyright LZCorp | NewsMC",
+        iconURL: "https://cdn.discordapp.com/embed/avatars/0.png",
+      })
+      .setTimestamp(new Date());
+
+    const profile: CustomProfil = {
+      userId: `334287301192450048`, // Génère un userId unique
+      guildId: "916487743004114974",
+      embeds: [embed], // Ajoute l'embed au profil
+    };
+
+    profiles.push(profile);
+  }
+
+  // Insère les profils générés dans la base de données
+  try {
+    await ProfilModel.insertMany(profiles);
+    console.log("100 profils générés avec succès.");
+  } catch (error) {
+    console.error("Erreur lors de la génération des profils :", error);
+  }
+}

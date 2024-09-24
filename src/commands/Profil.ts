@@ -604,13 +604,12 @@ export class Profil extends BaseCommand {
   ): EmbedBuilder {
     if (!user || !interaction) {
       return new EmbedBuilder()
-        .setTitle(`⭐⭐⭐ **Community-Manager**`)
+        .setTitle(`⭐⭐ **Ecrit ton domaine dans le titre**`)
         .setDescription(
-          "Je dessine depuis toujours c'est ma plus grande passion dans la vie, de manière générale j'ai 4 ans d'expérience en graphisme. Je travaille sur Minecraft depuis 2023, en grande partie avec le serveur Atlantis.",
+          "Bienvenue dans la creation de profil, créer ton profil en t'aidant du menu déroulant cidessus.",
         )
-        .setURL("https://www.google.com")
         .setAuthor({
-          name: "Page 2",
+          name: "Profil de Page 2",
         })
         .addFields(
           {
@@ -634,11 +633,10 @@ export class Profil extends BaseCommand {
     }
 
     return new EmbedBuilder()
-      .setTitle(`⭐⭐⭐ **Community-Manager**`)
+      .setTitle(`⭐⭐⭐ **Ecrit ton domaine dans le titre**`)
       .setDescription(
-        "Je dessine depuis toujours c'est ma plus grande passion dans la vie, de manière générale j'ai 4 ans d'expérience en graphisme. Je travaille sur Minecraft depuis 2023, en grande partie avec le serveur Atlantis.",
+        "Bienvenue dans la creation de profil, créer ton profil en t'aidant du menu déroulant cidessus.",
       )
-      .setURL("https://www.google.com")
       .setAuthor({
         name: `Profil de ${user?.username ?? "Page 2"}`,
         iconURL: user?.displayAvatarURL() ?? "",

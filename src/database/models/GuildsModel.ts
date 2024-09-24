@@ -14,7 +14,7 @@ export interface CustomGuild {
   suggestion_channel_id?: string;
   welcome_channel_id?: string;
   welcome_autorole_id?: string;
-  logs_channel_id?: string;
+  logs_channel_id: string;
   role_per_level?: RolePerLevel[];
   levelup_channel_id?: string;
   blacklist_channel_id?: string;

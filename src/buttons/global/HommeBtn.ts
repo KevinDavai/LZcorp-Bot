@@ -24,7 +24,7 @@ export class HommeBtn extends BaseButton {
     }
 
     const member = interaction.member as GuildMember;
-    const roleId = "1286369343369908255"; // Remplacez par l'ID réel du rôle
+    const roleId = "927140941347831808"; // Remplacez par l'ID réel du rôle
 
     try {
       if (member.roles.cache.has(roleId)) {

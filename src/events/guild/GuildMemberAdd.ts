@@ -4,6 +4,7 @@ import { giveAutorole, sendWelcomeEmbed } from "modules/welcomeModule";
 import { CustomInvite, InviteModel } from "database/models/InviteModel";
 import { getGuildInvites } from "database/utils/InviteUtils";
 import { inviteModule } from "modules/InvitesModule";
+import { guildMemberJoinLogs } from "modules/LogsModule";
 import { CustomClient } from "../../structures/CustomClient";
 import { BaseEvent } from "../../structures/BaseEvent";
 
@@ -18,6 +19,8 @@ export class GuildMemberAdd extends BaseEvent {
 
   async execute(member: GuildMember) {
     const guildSettings = await getGuildSettings(member.guild.id);
+
+    guildMemberJoinLogs(this.client, member);
 
     await inviteModule(member);
 

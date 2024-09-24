@@ -35,7 +35,7 @@ export class SurvieBtn extends BaseButton {
     }
 
     const member = interaction.member as GuildMember;
-    const roleId = "1286357582742818920"; // Remplacez par l'ID réel du rôle
+    const roleId = "1275245965871284264"; // Remplacez par l'ID réel du rôle
 
     try {
       if (member.roles.cache.has(roleId)) {

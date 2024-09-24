@@ -164,5 +164,4 @@ export async function GENERATEINVITE() {
   // Insert generated data into the database
   await InviteModel.insertMany(testData);
 
-  console.log("100 invite documents generated successfully!");
 }

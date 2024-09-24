@@ -24,7 +24,7 @@ export class JavaBtn extends BaseButton {
     }
 
     const member = interaction.member as GuildMember;
-    const roleId = "1286369208174641244"; // Remplacez par l'ID réel du rôle
+    const roleId = "1162089102276042812"; // Remplacez par l'ID réel du rôle
 
     try {
       if (member.roles.cache.has(roleId)) {

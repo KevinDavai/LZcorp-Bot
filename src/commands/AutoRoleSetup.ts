@@ -227,10 +227,7 @@ export class AutoRoleSetup extends BaseCommand {
           .setLabel("Notifications Giveaways")
           .setValue("notif_giveaway")
           .setEmoji("🎉"),
-        new StringSelectMenuOptionBuilder()
-          .setLabel("Notifications Events")
-          .setValue("notif_event")
-          .setEmoji("🎈"),
+
         new StringSelectMenuOptionBuilder()
           .setLabel("Joueur minecraft java")
           .setValue("java")

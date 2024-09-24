@@ -21,7 +21,23 @@ export class PrestataireIndisponibleBtn extends BaseButton {
   public constructor(client: CustomClient) {
     super(client, {
       id: "prestataire_indisponible",
-      roles: ["1282692402196385882", "1282692348131934229"],
+      roles: [
+        "953056804215095346",
+        "953056807188836422",
+        "953056811001462885",
+        "953057826652180490",
+        "1137408301492093009",
+        "953059691699773530",
+        "953264702652305499",
+        "953264709707116574",
+        "958110292670312570",
+        "974776075596988436",
+        "978217560623435776",
+        "958113912820232252",
+        "963199682534854656",
+        "964134348880244766",
+        "1153331052711006361",
+      ],
     });
   }
 
@@ -38,8 +54,8 @@ export class PrestataireIndisponibleBtn extends BaseButton {
     const member = interaction.member as GuildMember;
 
     // IDs des rôles
-    const role1 = "1286360570580434944"; // Exemple ID pour le rôle 1
-    const role2 = "1286360596949897366"; // Exemple ID pour le rôle 2
+    const role1 = "985358328634933291"; // Exemple ID pour le rôle 1
+    const role2 = "985358566712041512"; // Exemple ID pour le rôle 2
 
     // Récupérer le rôle sélectionné depuis l'interaction
     try {

@@ -1,6 +1,7 @@
 import { Events, Guild, GuildMember } from "discord.js";
 import { createGuild } from "database/utils/GuildsUtils";
 import { Logger } from "services/Logger";
+import { updateMemberLogs } from "modules/LogsModule";
 import { CustomClient } from "../../structures/CustomClient";
 import { BaseEvent } from "../../structures/BaseEvent";
 
@@ -15,6 +16,7 @@ export class GuildMemberUpdate extends BaseEvent {
 
   async execute(oldMember: GuildMember, newMember: GuildMember) {
     await handleMemberUpdate(oldMember, newMember);
+    updateMemberLogs(this.client, oldMember, newMember);
   }
 }
 

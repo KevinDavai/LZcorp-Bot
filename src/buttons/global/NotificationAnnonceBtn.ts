@@ -24,7 +24,7 @@ export class NotificationAnnonceBtn extends BaseButton {
     }
 
     const member = interaction.member as GuildMember;
-    const roleId = "1286369311144804403"; // Remplacez par l'ID réel du rôle
+    const roleId = "927140932451725342"; // Remplacez par l'ID réel du rôle
 
     try {
       if (member.roles.cache.has(roleId)) {

@@ -21,7 +21,6 @@ export async function giveAutorole(
     await member.roles.add(role);
   } catch (error) {
     Logger.error(Logs.error.giveAutorole, member.displayName, error);
-    throw error;
   }
 }
 
@@ -54,9 +53,9 @@ export async function sendWelcomeEmbed(
         .setDescription(
           `Ici, vous trouverez tout ce qui touche à Minecraft !
         
-        ➜ Pour demander de l'aide > <#760745745195728946>
-        ➜ Si vous cherchez un service en particulier > <#929743910027272322>
-        ➜ Pour voir notre règlement > <#929752200085930064>`,
+        ➜ Pour demander de l'aide > <#931915415184085003>
+        ➜ Si vous cherchez un service en particulier > <#1153846455535140884>
+        ➜ Pour voir notre règlement > <#931913719557025843>`,
         )
         .setFooter({
           text: "© Copyright | NewsMC",

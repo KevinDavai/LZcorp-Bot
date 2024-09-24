@@ -35,7 +35,7 @@ export class FactionBtn extends BaseButton {
     }
 
     const member = interaction.member as GuildMember;
-    const roleId = "1286348188042788884"; // Remplacez par l'ID réel du rôle
+    const roleId = "1275245915594166332"; // Remplacez par l'ID réel du rôle
 
     try {
       if (member.roles.cache.has(roleId)) {

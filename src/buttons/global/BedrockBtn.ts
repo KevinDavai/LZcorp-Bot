@@ -24,7 +24,7 @@ export class BedrockBtn extends BaseButton {
     }
 
     const member = interaction.member as GuildMember;
-    const roleId = "1286369178608996452"; // Remplacez par l'ID réel du rôle
+    const roleId = "1162396038435442718"; // Remplacez par l'ID réel du rôle
 
     try {
       if (member.roles.cache.has(roleId)) {

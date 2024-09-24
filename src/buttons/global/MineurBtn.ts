@@ -24,7 +24,7 @@ export class MineurBtn extends BaseButton {
     }
 
     const member = interaction.member as GuildMember;
-    const roleId = "1286369244052717702"; // Remplacez par l'ID réel du rôle
+    const roleId = "927141809702985769"; // Remplacez par l'ID réel du rôle
 
     try {
       if (member.roles.cache.has(roleId)) {

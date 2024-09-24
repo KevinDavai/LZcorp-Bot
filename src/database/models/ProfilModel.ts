@@ -23,6 +23,7 @@ const profilSchema = new Schema<CustomProfil>({
 });
 
 // Crée un index unique basé sur l'userId et guildId
+
 profilSchema.index({ userId: 1, guildId: 1 }, { unique: true });
 
 export const ProfilModel = model<CustomProfil>("Profils", profilSchema);

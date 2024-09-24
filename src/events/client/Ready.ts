@@ -1,7 +1,8 @@
 import { Events } from "discord.js";
 import { checkNewGuilds } from "database/utils/GuildsUtils";
-import { checkNewInvite, GENERATEINVITE } from "database/utils/InviteUtils";
+import { checkNewInvite } from "database/utils/InviteUtils";
 import { loadGiveaways } from "modules/GiveawayModule";
+import { generateProfiles } from "database/utils/ProfilModel";
 import { CustomClient } from "../../structures/CustomClient";
 import { BaseEvent } from "../../structures/BaseEvent";
 
