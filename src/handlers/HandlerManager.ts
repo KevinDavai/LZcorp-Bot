@@ -92,13 +92,7 @@ export class HandlerManager {
     try {
       const filePath = file.replace(/\\/g, "/");
 
-      const eventsDir = path.resolve(__dirname, "../../");
-
-      const normalizedPath = eventsDir.split(path.sep).join("/");
-
-      const finalPath = normalizedPath.replace("/home/container/", "");
-
-      const importedModule = await import(`file://${finalPath}/${filePath}`);
+      const importedModule = await import("../../" + filePath);
 
       await Object.keys(importedModule).forEach((key) => {
         const ExportedClass = importedModule[key];
@@ -125,13 +119,8 @@ export class HandlerManager {
   private async loadBtnFile(file: string): Promise<void> {
     try {
       const filePath = file.replace(/\\/g, "/");
-      const eventsDir = path.resolve(__dirname, "../../");
 
-      const normalizedPath = eventsDir.split(path.sep).join("/");
-
-      const finalPath = normalizedPath.replace("/home/container/", "");
-
-      const importedModule = await import(`file://${finalPath}/${filePath}`);
+      const importedModule = await import("../../" + filePath);
 
       await Object.keys(importedModule).forEach((key) => {
         const ExportedClass = importedModule[key];
@@ -164,13 +153,7 @@ export class HandlerManager {
     try {
       const filePath = file.replace(/\\/g, "/");
 
-      const eventsDir = path.resolve(__dirname, "../../");
-
-      const normalizedPath = eventsDir.split(path.sep).join("/");
-
-      const finalPath = normalizedPath.replace("/home/container/", "");
-
-      const importedModule = await import(`file://${finalPath}/${filePath}`);
+      const importedModule = await import("../../" + filePath);
 
       Object.keys(importedModule).forEach((key) => {
         const ExportedClass = importedModule[key];
