@@ -73,10 +73,29 @@ export class HandlerManager {
       for (const command of guildSpecificCommands) {
         const commandGuildId = command[0].split("_")[1];
         if (
-          (process.env.DISCORD_CLIENT_ID === "1286442713377669192" &&
-            commandGuildId === "612282000388259845") ||
-          (process.env.DISCORD_CLIENT_ID === "1286440776376651886" &&
-            commandGuildId === "715272187669512234")
+          process.env.DISCORD_CLIENT_ID === "1286442713377669192" &&
+          commandGuildId === "612282000388259845"
+        ) {
+          await rest.post(
+            Routes.applicationGuildCommands(
+              process.env.DISCORD_CLIENT_ID,
+              commandGuildId,
+            ),
+            { body: command[1].data }, // Poster la commande à la guilde correspondante
+          );
+
+          Logger.info(
+            `Command registered for guild ${commandGuildId}, command: ${command[1].data.name}`,
+          );
+        } else {
+          Logger.info(
+            `Skipping command ${command[1].data.name} for guild ${commandGuildId} because it doesn't match the current DISCORD_CLIENT_ID`,
+          );
+        }
+
+        if (
+          process.env.DISCORD_CLIENT_ID === "1286440776376651886" &&
+          commandGuildId === "715272187669512234"
         ) {
           await rest.post(
             Routes.applicationGuildCommands(
