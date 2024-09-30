@@ -242,7 +242,10 @@ export class Settings extends BaseCommand {
                   option
                     .setName("channel")
                     .setDescription("Le channel")
-                    .addChannelTypes(ChannelType.GuildText)
+                    .addChannelTypes(
+                      ChannelType.GuildText,
+                      ChannelType.GuildAnnouncement,
+                    )
                     .setRequired(true),
                 ),
             )
