@@ -90,9 +90,13 @@ export class JobService {
 
   private async loadJobFile(file: string): Promise<void> {
     try {
-      const filePath = file.replace(/\\/g, "/");
+      let filePath = file.replace(/\\/g, "/");
 
-      const importedModule = await import(`@jobs/../../${filePath}`);
+      // Supprimer la première occurrence de "/home/container/" si elle existe
+      filePath = filePath.replace(/^\/home\/container\//, "");
+
+      // Importer le module avec le chemin corrigé
+      const importedModule = await import("../../" + filePath);
 
       Object.keys(importedModule).forEach((key) => {
         const ExportedClass = importedModule[key];
