@@ -72,8 +72,6 @@ export class HandlerManager {
       // Enregistrement des commandes spécifiques à une guilde
       for (const command of guildSpecificCommands) {
         const commandGuildId = command[0].split("_")[1];
-        console.log("process " + process.env.DISCORD_CLIENT_ID);
-        console.log("commandGuildId " + commandGuildId);
         if (
           process.env.DISCORD_CLIENT_ID === "1286442713377669192" &&
           commandGuildId === "612282000388259845"

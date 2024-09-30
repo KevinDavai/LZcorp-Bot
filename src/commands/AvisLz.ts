@@ -39,7 +39,7 @@ export class AvisLz extends BaseCommand {
             .setRequired(true),
         ),
     });
-    this.guildIdOnly = "836737715634307109";
+    this.guildIdOnly = "715272187669512234";
   }
 
   private getStarRating(note: number, maxNote: number = 5): string {

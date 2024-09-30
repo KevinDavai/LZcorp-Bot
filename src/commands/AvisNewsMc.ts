@@ -37,7 +37,7 @@ export class AvisNewsMc extends BaseCommand {
             .setRequired(true),
         ),
     });
-    this.guildIdOnly = "916487743004114974";
+    this.guildIdOnly = "612282000388259845";
   }
 
   private getStarRating(note: number, maxNote: number = 5): string {

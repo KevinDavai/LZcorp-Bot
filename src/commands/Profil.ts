@@ -97,7 +97,7 @@ export class Profil extends BaseCommand {
             ),
         ),
 
-      guildIdOnly: "916487743004114974",
+      guildIdOnly: "612282000388259845",
       cooldown: 1000,
       subcommands: {
         create: {

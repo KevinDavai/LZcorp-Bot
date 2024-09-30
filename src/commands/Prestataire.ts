@@ -45,7 +45,7 @@ export class Prestataire extends BaseCommand {
           subcommand.setName("list").setDescription("Lister les prestataires."),
         ),
     });
-    this.guildIdOnly = "916487743004114974";
+    this.guildIdOnly = "612282000388259845";
   }
 
   public async execute(
