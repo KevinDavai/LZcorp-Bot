@@ -49,43 +49,43 @@ export class HandlerManager {
 
     await Promise.all(files.map((file) => this.loadCmdFile(file)));
 
-    // const rest = new REST().setToken(process.env.DISCORD_TOKEN as string);
+    const rest = new REST().setToken(process.env.DISCORD_TOKEN as string);
 
-    // try {
-    //   // Filtrer les commandes : Globales vs Guildes spécifiques
-    //   const globalCommands = this.client.commands.filter(
-    //     (cmd) => !cmd.guildIdOnly,
-    //   );
-    //   const guildSpecificCommands = this.client.commands.filter(
-    //     (cmd) => cmd.guildIdOnly,
-    //   );
+    try {
+      // Filtrer les commandes : Globales vs Guildes spécifiques
+      const globalCommands = this.client.commands.filter(
+        (cmd) => !cmd.guildIdOnly,
+      );
+      const guildSpecificCommands = this.client.commands.filter(
+        (cmd) => cmd.guildIdOnly,
+      );
 
-    //   // Enregistrement des commandes globales
-    //   if (globalCommands.size > 0) {
-    //     await rest.put(
-    //       Routes.applicationCommands(process.env.DISCORD_CLIENT_ID),
-    //       { body: globalCommands.map((cmd) => cmd.data) },
-    //     );
-    //     Logger.info(`Global commands registered successfully.`);
-    //   }
+      // Enregistrement des commandes globales
+      if (globalCommands.size > 0) {
+        await rest.put(
+          Routes.applicationCommands(process.env.DISCORD_CLIENT_ID),
+          { body: globalCommands.map((cmd) => cmd.data) },
+        );
+        Logger.info(`Global commands registered successfully.`);
+      }
 
-    //   // Enregistrement des commandes spécifiques à une guilde
-    //   for (const command of guildSpecificCommands) {
-    //     const commandGuildId = command[0].split("_")[1];
-    //     await rest.post(
-    //       Routes.applicationGuildCommands(
-    //         process.env.DISCORD_CLIENT_ID,
-    //         commandGuildId,
-    //       ),
-    //       { body: command[1].data }, // Une commande à la fois par guilde
-    //     );
-    //     Logger.info(
-    //       `Command registered for guild ${commandGuildId}, command: ${command[1].data.name}`,
-    //     );
-    //   }
-    // } catch (error) {
-    //   Logger.error(this.client.lang.error.loadCommandAPI, error);
-    // }
+      // Enregistrement des commandes spécifiques à une guilde
+      for (const command of guildSpecificCommands) {
+        const commandGuildId = command[0].split("_")[1];
+        await rest.post(
+          Routes.applicationGuildCommands(
+            process.env.DISCORD_CLIENT_ID,
+            commandGuildId,
+          ),
+          { body: command[1].data }, // Une commande à la fois par guilde
+        );
+        Logger.info(
+          `Command registered for guild ${commandGuildId}, command: ${command[1].data.name}`,
+        );
+      }
+    } catch (error) {
+      Logger.error(this.client.lang.error.loadCommandAPI, error);
+    }
   }
 
   private async loadCmdFile(file: string): Promise<void> {

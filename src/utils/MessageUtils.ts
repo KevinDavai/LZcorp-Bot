@@ -246,13 +246,9 @@ export async function getOrFetchMessageById(
     // Le message n'est pas dans le cache, on va donc le récupérer depuis l'API Discord
     try {
       const fetchedMessage = await channel.messages.fetch(messageId);
-      if (fetchedMessage) {
-        message = fetchedMessage;
-      } else {
-        Logger.error(Logs.error.messageByIdNotFound, messageId);
-      }
+      if (fetchedMessage) message = fetchedMessage;
     } catch (error) {
-      Logger.error(Logs.error.fetchMessageById, messageId, error);
+      return undefined;
     }
   }
 

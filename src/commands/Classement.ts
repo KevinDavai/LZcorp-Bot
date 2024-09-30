@@ -15,7 +15,7 @@ export class Classement extends BaseCommand {
     super(client, {
       data: new SlashCommandBuilder()
         .setName("classement")
-        .setDescription("Afficher les classements des utilisateurs.")
+        .setDescription("Afficher le classement des invitations.")
         .addSubcommand((subcommand) =>
           subcommand
             .setName("invites")

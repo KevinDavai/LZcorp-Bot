@@ -26,6 +26,13 @@ export class MessageDelete extends BaseEvent {
   }
 
   async execute(message: Message) {
+    const guildSettings = await getGuildSettings(message.guild!.id);
+
+    if (guildSettings.suggestion_channel_id) {
+      if (message.channel.id === guildSettings.suggestion_channel_id) {
+        return;
+      }
+    }
     deleteMessageLogs(this.client, message);
   }
 }

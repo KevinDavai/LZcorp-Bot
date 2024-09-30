@@ -52,7 +52,8 @@ export async function getEmbedById(
 ): Promise<CustomEmbed | null> {
   try {
     // Check the cache first
-    const cachedEmbeds = embedCache.get<CustomEmbed[]>(guildId);
+    const cachekey = `${guildId}-${embedId}`;
+    const cachedEmbeds = embedCache.get<CustomEmbed[]>(cachekey);
 
     if (cachedEmbeds) {
       const embed = cachedEmbeds.find((e) => e._id === embedId);
@@ -69,7 +70,7 @@ export async function getEmbedById(
       // Update cache with new embed
       const embeds = cachedEmbeds || [];
       embeds.push(embed);
-      embedCache.set(guildId, embeds);
+      embedCache.set(cachekey, embeds);
     }
 
     return embed;
@@ -85,7 +86,8 @@ export async function isEmbedExist(
 ): Promise<boolean> {
   try {
     // Vérifie si l'embed est déjà dans le cache pour cette guild
-    const cachedEmbeds = embedCache.get<CustomEmbed[]>(guildId);
+    const cachekey = `${guildId}-${embedId}`;
+    const cachedEmbeds = embedCache.get<CustomEmbed[]>(cachekey);
 
     // Si le cache contient des embeds, vérifie si l'embed spécifique existe
     if (cachedEmbeds) {
@@ -97,6 +99,13 @@ export async function isEmbedExist(
 
     // Si l'embed n'est pas dans le cache, vérifie dans la base de données
     const embed = await EmbedModel.findOne({ _id: embedId, guildId });
+
+    if (embed) {
+      // Met à jour le cache avec le nouvel embed
+      const embeds = cachedEmbeds || [];
+      embeds.push(embed);
+      embedCache.set(cachekey, embeds);
+    }
 
     return embed !== null;
   } catch (error) {

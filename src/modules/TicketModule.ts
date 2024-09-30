@@ -165,21 +165,31 @@ async function createTicketLZCorpCommande(
     return;
   }
 
+  const permissionOverwrites: OverwriteResolvable[] = [
+    {
+      id: member.id,
+      allow: [PermissionFlagsBits.ViewChannel],
+    },
+    {
+      id: interaction.guild!.id,
+      deny: [PermissionFlagsBits.ViewChannel],
+    },
+  ];
+
+  // Ajouter dynamiquement les permissions pour un rôle spécifique, si défini
+  if (guildSettings.ticket_role_id) {
+    permissionOverwrites.push({
+      id: guildSettings.ticket_role_id,
+      allow: [PermissionFlagsBits.ViewChannel],
+    });
+  }
+
   const channelOptions: GuildChannelCreateOptions = {
     name: `${ticketType}-${member.user.username}`,
     type: ChannelType.GuildText,
     topic: `Ticket de commande de ${member.user.username} | ${member.user.id}`,
     parent: guildSettings.ticket_commande_category_id,
-    permissionOverwrites: [
-      {
-        id: member.id,
-        allow: [PermissionFlagsBits.ViewChannel],
-      },
-      {
-        id: interaction.guild!.id,
-        deny: [PermissionFlagsBits.ViewChannel],
-      },
-    ],
+    permissionOverwrites,
   };
 
   const ticketChannel =

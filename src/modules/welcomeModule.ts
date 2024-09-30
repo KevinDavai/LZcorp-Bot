@@ -62,6 +62,23 @@ export async function sendWelcomeEmbed(
           iconURL: member.client.user.displayAvatarURL(),
         })
         .setColor("#87CEFA");
+    } else {
+      welcomeEmbed
+        .setTitle(
+          `» Bienvenue __${member.displayName}__ sur NewsMC - Communautaire !`,
+        )
+        .setDescription(
+          `Ici, vous trouverez tout ce qui touche à Minecraft !
+          
+          ➜ Pour demander de l'aide > <#931915415184085003>
+          ➜ Si vous cherchez un service en particulier > <#1153846455535140884>
+          ➜ Pour voir notre règlement > <#931913719557025843>`,
+        )
+        .setFooter({
+          text: "© Copyright | NewsMC",
+          iconURL: member.client.user.displayAvatarURL(),
+        })
+        .setColor("#87CEFA");
     }
 
     // Essaye de récupérer le canal de bienvenue
