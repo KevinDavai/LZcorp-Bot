@@ -91,7 +91,14 @@ export class HandlerManager {
   private async loadCmdFile(file: string): Promise<void> {
     try {
       const filePath = file.replace(/\\/g, "/");
-      const importedModule = await import(`@commands/../../${filePath}`);
+
+      const eventsDir = path.resolve(__dirname, "../../");
+
+      const normalizedPath = eventsDir.split(path.sep).join("/");
+
+      const importedModule = await import(
+        `file://${normalizedPath}/${filePath}`
+      );
 
       await Object.keys(importedModule).forEach((key) => {
         const ExportedClass = importedModule[key];
@@ -118,7 +125,13 @@ export class HandlerManager {
   private async loadBtnFile(file: string): Promise<void> {
     try {
       const filePath = file.replace(/\\/g, "/");
-      const importedModule = await import(`@buttons/../../${filePath}`);
+      const eventsDir = path.resolve(__dirname, "../../");
+
+      const normalizedPath = eventsDir.split(path.sep).join("/");
+
+      const importedModule = await import(
+        `file://${normalizedPath}/${filePath}`
+      );
 
       await Object.keys(importedModule).forEach((key) => {
         const ExportedClass = importedModule[key];
