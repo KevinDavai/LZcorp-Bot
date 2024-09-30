@@ -508,11 +508,16 @@ export class Settings extends BaseCommand {
       blacklist: {
         channel: async () => {
           const channel = interaction.options.getChannel("channel");
-          if (channel && channel.type === ChannelType.GuildText) {
-            await setBlackListChannel(interaction.guild!, channel.id);
-            await sendValidEmbedWithCountdown(interaction, [
-              `Le channel blacklist est désormais ${channel}`,
-            ]);
+          if (channel) {
+            if (
+              channel.type === ChannelType.GuildText ||
+              channel.type === ChannelType.GuildAnnouncement
+            ) {
+              await setBlackListChannel(interaction.guild!, channel.id);
+              await sendValidEmbedWithCountdown(interaction, [
+                `Le channel blacklist est désormais ${channel}`,
+              ]);
+            }
           } else {
             await sendErrorEmbedWithCountdown(interaction, [
               "Le channel spécifié n'est pas un channel text ou est introuvable.",
