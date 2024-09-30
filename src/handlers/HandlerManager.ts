@@ -68,6 +68,7 @@ export class HandlerManager {
         );
         Logger.info(`Global commands registered successfully.`);
       }
+      console.log("process " + process.env.DISCORD_CLIENT_ID);
 
       // Enregistrement des commandes spécifiques à une guilde
       for (const command of guildSpecificCommands) {
