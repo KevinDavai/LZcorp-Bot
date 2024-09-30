@@ -151,7 +151,13 @@ export class HandlerManager {
     try {
       const filePath = file.replace(/\\/g, "/");
 
-      const importedModule = await import(`@events/../../${filePath}`);
+      const eventsDir = path.resolve(__dirname, "../../");
+
+      const normalizedPath = eventsDir.split(path.sep).join("/");
+
+      const importedModule = await import(
+        `file://${normalizedPath}/${filePath}`
+      );
 
       Object.keys(importedModule).forEach((key) => {
         const ExportedClass = importedModule[key];
