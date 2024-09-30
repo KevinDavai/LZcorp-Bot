@@ -90,8 +90,12 @@ export class HandlerManager {
 
   private async loadCmdFile(file: string): Promise<void> {
     try {
-      const filePath = file.replace(/\\/g, "/");
+      let filePath = file.replace(/\\/g, "/");
 
+      // Supprimer la première occurrence de "/home/container/" si elle existe
+      filePath = filePath.replace(/^\/home\/container\//, "");
+
+      // Importer le module avec le chemin corrigé
       const importedModule = await import("../../" + filePath);
 
       await Object.keys(importedModule).forEach((key) => {
@@ -118,8 +122,12 @@ export class HandlerManager {
 
   private async loadBtnFile(file: string): Promise<void> {
     try {
-      const filePath = file.replace(/\\/g, "/");
+      let filePath = file.replace(/\\/g, "/");
 
+      // Supprimer la première occurrence de "/home/container/" si elle existe
+      filePath = filePath.replace(/^\/home\/container\//, "");
+
+      // Importer le module avec le chemin corrigé
       const importedModule = await import("../../" + filePath);
 
       await Object.keys(importedModule).forEach((key) => {
@@ -151,8 +159,12 @@ export class HandlerManager {
 
   private async loadEventFile(file: string): Promise<void> {
     try {
-      const filePath = file.replace(/\\/g, "/");
+      let filePath = file.replace(/\\/g, "/");
 
+      // Supprimer la première occurrence de "/home/container/" si elle existe
+      filePath = filePath.replace(/^\/home\/container\//, "");
+
+      // Importer le module avec le chemin corrigé
       const importedModule = await import("../../" + filePath);
 
       Object.keys(importedModule).forEach((key) => {
