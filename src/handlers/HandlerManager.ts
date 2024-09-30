@@ -94,7 +94,10 @@ export class HandlerManager {
 
       const eventsDir = path.resolve(__dirname, "../../");
 
-      const normalizedPath = eventsDir.split(path.sep).join("/");
+      const normalizedPath = eventsDir
+        .split(path.sep)
+        .join("/")
+        .replace("/home/container/", "");
 
       const importedModule = await import(
         `file://${normalizedPath}/${filePath}`
@@ -127,7 +130,10 @@ export class HandlerManager {
       const filePath = file.replace(/\\/g, "/");
       const eventsDir = path.resolve(__dirname, "../../");
 
-      const normalizedPath = eventsDir.split(path.sep).join("/");
+      const normalizedPath = eventsDir
+        .split(path.sep)
+        .join("/")
+        .replace("/home/container/", "");
 
       const importedModule = await import(
         `file://${normalizedPath}/${filePath}`
@@ -166,7 +172,10 @@ export class HandlerManager {
 
       const eventsDir = path.resolve(__dirname, "../../");
 
-      const normalizedPath = eventsDir.split(path.sep).join("/");
+      const normalizedPath = eventsDir
+        .split(path.sep)
+        .join("/")
+        .replace("/home/container/", "");
 
       const importedModule = await import(
         `file://${normalizedPath}/${filePath}`
