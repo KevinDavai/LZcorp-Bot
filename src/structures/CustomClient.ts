@@ -67,7 +67,11 @@ export class CustomClient extends Client {
 
     Logger.info(this._lang.info.mongodbTryConnect);
 
-    await connect(process.env.MONGODB_URI)
+    await connect(process.env.MONGODB_URI, {
+      authSource: "admin",
+      user: process.env.MONGODB_USER,
+      pass: process.env.MONGODB_PASS,
+    })
       .then(() => {
         Logger.info(this._lang.info.mongodbConnected);
       })
