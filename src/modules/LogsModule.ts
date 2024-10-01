@@ -130,7 +130,7 @@ export function updateMessageLogs(
   const embed = {
     description: `
 **Autheur : ** <@${newMessage.member!.user.id}> - *${newMessage.member!.user.tag}*
-**Date : ** ${newMessage.createdAt}
+**Date : ** ${newMessage.createdAt.toLocaleDateString("fr-FR")}
 **Channel : ** <#${newMessage.channel.id}> - *${newMessage.channel.name}*
 
 **Message original : **
@@ -153,7 +153,7 @@ export function guildMemberJoinLogs(client: CustomClient, member: GuildMember) {
   if (!isLogsEnabled(member.guild.id)) return;
 
   const embed = {
-    description: `<@${member.user.id}> - *${member.user.id}*\nUtilisateur crée le: ${new Date(member.user.createdTimestamp).toDateString()}`,
+    description: `<@${member.user.id}> - *${member.user.id}*\nUtilisateur crée le: ${new Date(member.user.createdTimestamp).toLocaleDateString("fr-FR")}`,
     url: member.user.displayAvatarURL(),
     color: 65280,
     timestamp: new Date(),
