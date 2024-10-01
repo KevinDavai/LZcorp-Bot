@@ -48,6 +48,6 @@ export class MessageCreate extends BaseEvent {
 
     const userDetail = await getUserById(message.author.id, message.guild.id);
 
-    addXP(userDetail, 10, message.guild);
+    await addXP(userDetail, 10, message.guild);
   }
 }

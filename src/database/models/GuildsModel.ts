@@ -30,6 +30,7 @@ export interface CustomGuild {
   ticket_commande_category_id: string;
   ticket_role_id: string;
   ticket_log_channel_id: string;
+  message_log_channel_id: string;
   ticket_transcript_channel_id: string;
 }
 
@@ -63,6 +64,7 @@ const guildSchema = new Schema<CustomGuild>({
   ticket_commande_category_id: { type: String, default: null },
   ticket_role_id: { type: String, default: null },
   ticket_log_channel_id: { type: String, default: null },
+  message_log_channel_id: { type: String, default: null },
   ticket_transcript_channel_id: { type: String, default: null },
 });
 

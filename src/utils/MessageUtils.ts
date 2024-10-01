@@ -255,17 +255,28 @@ export async function getOrFetchMessageById(
   return message;
 }
 
-export async function sendLog(client: CustomClient, guild: Guild, msg: string) {
+export async function sendLog(
+  client: CustomClient,
+  guild: Guild,
+  msg: string,
+  isMessageLog = false,
+) {
   let embed: EmbedBuilder | null = null;
 
   // if (debug) console.log(`Module: ${description.name} | send - computed options:`, options)
 
   const guildSettings = await getGuildSettings(guild.id);
 
-  const channel = await getOrFetchChannelById(
-    guild,
-    guildSettings.logs_channel_id,
-  );
+  let channel;
+
+  if (isMessageLog) {
+    channel = await getOrFetchChannelById(
+      guild,
+      guildSettings.message_log_channel_id,
+    );
+  } else {
+    channel = await getOrFetchChannelById(guild, guildSettings.logs_channel_id);
+  }
 
   if (channel && channel.type === ChannelType.GuildText) {
     const bot = channel.guild.members.me;

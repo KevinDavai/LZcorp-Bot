@@ -102,7 +102,7 @@ ${message.attachments.map((x) => x.proxyURL)}
     },
   };
   if (message && message.member && typeof message.member.guild === "object") {
-    sendLog(client, message.member.guild, embed as any);
+    sendLog(client, message.member.guild, embed as any, true);
   } else {
     console.error(`
             Module: $ {
@@ -146,7 +146,7 @@ export function updateMessageLogs(
       name: "Message Edité",
     },
   };
-  sendLog(client, newMessage.member!.guild, embed as any);
+  sendLog(client, newMessage.member!.guild, embed as any, true);
 }
 
 export function guildMemberJoinLogs(client: CustomClient, member: GuildMember) {
@@ -484,7 +484,7 @@ export function updateUserLogs(
         if (usernameChangedMsg) sendLog(client, guild, usernameChangedMsg);
         if (discriminatorChangedMsg)
           sendLog(client, guild, discriminatorChangedMsg);
-        if (avatarChangedMsg) sendLog(client, guild, avatarChangedMsg);
+        // if (avatarChangedMsg) sendLog(client, guild, avatarChangedMsg);
       }
     });
   });

@@ -73,6 +73,18 @@ export class Settings extends BaseCommand {
         )
         .addSubcommand((subcommand) =>
           subcommand
+            .setName("messagelog")
+            .setDescription("Changer le channel de logs des messages")
+            .addChannelOption((option) =>
+              option
+                .setName("channel")
+                .setDescription("Le channel")
+                .addChannelTypes(ChannelType.GuildText)
+                .setRequired(true),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
             .setName("autorole_welcome")
             .setDescription("Changer le role à donner aux nouveaux membres")
             .addRoleOption((option) =>
@@ -403,6 +415,19 @@ export class Settings extends BaseCommand {
           ]);
         }
       },
+      messagelog: async () => {
+        const channel = interaction.options.getChannel("channel");
+        if (channel && channel.type === ChannelType.GuildText) {
+          await setMessageLogsChannel(interaction.guild!, channel.id);
+          await sendValidEmbedWithCountdown(interaction, [
+            `Le channel de logs des messages est désormais ${channel}`,
+          ]);
+        } else {
+          await sendErrorEmbedWithCountdown(interaction, [
+            "Le channel spécifié n'est pas un channel text ou est introuvable.",
+          ]);
+        }
+      },
       autorole_welcome: async () => {
         const role = interaction.options.getRole("role");
         if (role) {
@@ -719,6 +744,7 @@ export class Settings extends BaseCommand {
             ]);
           }
         },
+
         transcript_channel: async () => {
           const channel = interaction.options.getChannel("channel", true);
           if (channel && channel.type === ChannelType.GuildText) {

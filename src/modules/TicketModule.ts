@@ -356,6 +356,13 @@ export async function closeTicket(
           value: `\`${reason}\``,
           inline: true,
         });
+      } else {
+        // Push reason into the embedsfield at the third place:
+        embedFields.splice(5, 0, {
+          name: " ",
+          value: " ",
+          inline: true,
+        });
       }
 
       // Ajout du lien vers le transcript si disponible
