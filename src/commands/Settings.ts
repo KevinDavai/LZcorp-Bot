@@ -25,6 +25,7 @@ import {
   setBlackListRole,
   setLevelUpChannel,
   setLogsChannel,
+  setMessageLogsChannel,
   setSuggestionChannel,
   setTicketCategory,
   setTicketCommandeCategory,
