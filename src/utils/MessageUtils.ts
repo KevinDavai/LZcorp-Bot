@@ -275,8 +275,6 @@ export async function sendLog(
       guild,
       guildSettings.message_log_channel_id,
     );
-  } else {
-    channel = await getOrFetchChannelById(guild, guildSettings.logs_channel_id);
   }
 
   if (isLeaveLog) {
@@ -284,7 +282,9 @@ export async function sendLog(
       guild,
       guildSettings.leave_log_channel_id,
     );
-  } else {
+  }
+
+  if (!channel) {
     channel = await getOrFetchChannelById(guild, guildSettings.logs_channel_id);
   }
 
