@@ -77,7 +77,7 @@ export function deleteMessageLogs(client: CustomClient, message: Message) {
   const embed = {
     description: `
 **Autheur : ** <@${message.author.id}> - *${message.author.tag}*
-**Date : ** ${message.createdAt}
+**Date : ** ${message.createdAt.toLocaleDateString("fr-FR")}
 **Channel : ** <#${message.channel.id}> - *${message.channel.name}*
 
 **Deleted Message : **
