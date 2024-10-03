@@ -23,8 +23,10 @@ import {
   setAvisChannel,
   setBlackListChannel,
   setBlackListRole,
+  setLeaveLogChannel,
   setLevelUpChannel,
   setLogsChannel,
+  setMemberCountChannel,
   setMessageLogsChannel,
   setSuggestionChannel,
   setTicketCategory,
@@ -422,6 +424,32 @@ export class Settings extends BaseCommand {
           await setMessageLogsChannel(interaction.guild!, channel.id);
           await sendValidEmbedWithCountdown(interaction, [
             `Le channel de logs des messages est désormais ${channel}`,
+          ]);
+        } else {
+          await sendErrorEmbedWithCountdown(interaction, [
+            "Le channel spécifié n'est pas un channel text ou est introuvable.",
+          ]);
+        }
+      },
+      leavelog: async () => {
+        const channel = interaction.options.getChannel("channel");
+        if (channel && channel.type === ChannelType.GuildText) {
+          await setLeaveLogChannel(interaction.guild!, channel.id);
+          await sendValidEmbedWithCountdown(interaction, [
+            `Le channel de logs des leaves est désormais ${channel}`,
+          ]);
+        } else {
+          await sendErrorEmbedWithCountdown(interaction, [
+            "Le channel spécifié n'est pas un channel text ou est introuvable.",
+          ]);
+        }
+      },
+      membercount: async () => {
+        const channel = interaction.options.getChannel("channel");
+        if (channel && channel.type === ChannelType.GuildVoice) {
+          await setMemberCountChannel(interaction.guild!, channel.id);
+          await sendValidEmbedWithCountdown(interaction, [
+            `Le channel de member count est désormais ${channel}`,
           ]);
         } else {
           await sendErrorEmbedWithCountdown(interaction, [

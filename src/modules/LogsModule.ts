@@ -236,7 +236,7 @@ export async function guildMemberLeft(
     };
   });
 
-  sendLog(client, member.guild, embed as any);
+  sendLog(client, member.guild, embed as any, false, true);
 }
 
 export function guildBanAddLogs(client: CustomClient, guildBan: GuildBan) {
@@ -481,9 +481,8 @@ export function updateUserLogs(
           };
         }
 
-        if (usernameChangedMsg) sendLog(client, guild, usernameChangedMsg);
-        if (discriminatorChangedMsg)
-          sendLog(client, guild, discriminatorChangedMsg);
+        // if (usernameChangedMsg) sendLog(client, guild, usernameChangedMsg);
+        // if (discriminatorChangedMsg) sendLog(client, guild, discriminatorChangedMsg);
         // if (avatarChangedMsg) sendLog(client, guild, avatarChangedMsg);
       }
     });

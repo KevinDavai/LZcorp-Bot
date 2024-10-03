@@ -31,6 +31,8 @@ export interface CustomGuild {
   ticket_role_id: string;
   ticket_log_channel_id: string;
   message_log_channel_id: string;
+  leave_log_channel_id: string;
+  member_count_channel_id: string;
   ticket_transcript_channel_id: string;
 }
 
@@ -65,6 +67,8 @@ const guildSchema = new Schema<CustomGuild>({
   ticket_role_id: { type: String, default: null },
   ticket_log_channel_id: { type: String, default: null },
   message_log_channel_id: { type: String, default: null },
+  leave_log_channel_id: { type: String, default: null },
+  member_count_channel_id: { type: String, default: null },
   ticket_transcript_channel_id: { type: String, default: null },
 });
 

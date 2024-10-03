@@ -260,6 +260,7 @@ export async function sendLog(
   guild: Guild,
   msg: string,
   isMessageLog = false,
+  isLeaveLog = false,
 ) {
   let embed: EmbedBuilder | null = null;
 
@@ -273,6 +274,15 @@ export async function sendLog(
     channel = await getOrFetchChannelById(
       guild,
       guildSettings.message_log_channel_id,
+    );
+  } else {
+    channel = await getOrFetchChannelById(guild, guildSettings.logs_channel_id);
+  }
+
+  if (isLeaveLog) {
+    channel = await getOrFetchChannelById(
+      guild,
+      guildSettings.leave_log_channel_id,
     );
   } else {
     channel = await getOrFetchChannelById(guild, guildSettings.logs_channel_id);

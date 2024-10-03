@@ -108,6 +108,50 @@ export async function setMessageLogsChannel(guild: Guild, channelId: string) {
   }
 }
 
+export async function setLeaveLogChannel(guild: Guild, channelId: string) {
+  const client = guild.client as CustomClient;
+
+  try {
+    // Mise à jour directe du welcome_channel_id pour la guilde donnée
+    await GuildModel.updateOne(
+      { _id: guild.id }, // Filtre : on sélectionne la guilde par son _id
+      { $set: { leave_log_channel_id: channelId } }, // Mise à jour du welcome_channel_id
+    );
+
+    const cachedGuild = guildCache.get<CustomGuild>(guild.id);
+
+    if (cachedGuild) {
+      // Si la guilde est dans le cache, on met à jour uniquement le welcome_channel_id
+      cachedGuild.leave_log_channel_id = channelId;
+      guildCache.set(guild.id, cachedGuild); // Met à jour le cache
+    }
+  } catch (error) {
+    Logger.error(client.lang.error.welcomeChannelUpdate, guild.id, error);
+  }
+}
+
+export async function setMemberCountChannel(guild: Guild, channelId: string) {
+  const client = guild.client as CustomClient;
+
+  try {
+    // Mise à jour directe du welcome_channel_id pour la guilde donnée
+    await GuildModel.updateOne(
+      { _id: guild.id }, // Filtre : on sélectionne la guilde par son _id
+      { $set: { member_count_channel_id: channelId } }, // Mise à jour du welcome_channel_id
+    );
+
+    const cachedGuild = guildCache.get<CustomGuild>(guild.id);
+
+    if (cachedGuild) {
+      // Si la guilde est dans le cache, on met à jour uniquement le welcome_channel_id
+      cachedGuild.member_count_channel_id = channelId;
+      guildCache.set(guild.id, cachedGuild); // Met à jour le cache
+    }
+  } catch (error) {
+    Logger.error(client.lang.error.welcomeChannelUpdate, guild.id, error);
+  }
+}
+
 export async function setWelcomeChannel(guild: Guild, channelId: string) {
   const client = guild.client as CustomClient;
 
