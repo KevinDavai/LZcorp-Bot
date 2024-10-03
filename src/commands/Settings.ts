@@ -88,6 +88,30 @@ export class Settings extends BaseCommand {
         )
         .addSubcommand((subcommand) =>
           subcommand
+            .setName("leavelog")
+            .setDescription("Changer le channel de logs des leaves")
+            .addChannelOption((option) =>
+              option
+                .setName("channel")
+                .setDescription("Le channel")
+                .addChannelTypes(ChannelType.GuildText)
+                .setRequired(true),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("membercount")
+            .setDescription("Changer le channel de membercount")
+            .addChannelOption((option) =>
+              option
+                .setName("channel")
+                .setDescription("Le channel")
+                .addChannelTypes(ChannelType.GuildVoice)
+                .setRequired(true),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
             .setName("autorole_welcome")
             .setDescription("Changer le role à donner aux nouveaux membres")
             .addRoleOption((option) =>
