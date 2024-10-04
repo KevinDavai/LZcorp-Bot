@@ -119,6 +119,8 @@ export function updateMessageLogs(
   oldMessage: Message,
   newMessage: Message,
 ) {
+  if (oldMessage.partial) return;
+
   if (oldMessage.guild && !isLogsEnabled(oldMessage.guild.id)) return;
 
   if (oldMessage.author.bot) return;
