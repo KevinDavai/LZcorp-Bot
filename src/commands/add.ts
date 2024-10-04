@@ -11,6 +11,7 @@ import {
   getOrFetchChannelById,
   getOrFetchMemberById,
   sendErrorEmbedWithCountdown,
+  sendValidEmbedWithCountdown,
 } from "utils/MessageUtils";
 
 export class Add extends BaseCommand {
@@ -109,6 +110,8 @@ export class Add extends BaseCommand {
       c.permissionOverwrites.edit(role.id, {
         ViewChannel: true,
       });
+
+      await sendValidEmbedWithCountdown(interaction, ["Role ajouté au salon."]);
     }
   }
 
@@ -133,6 +136,10 @@ export class Add extends BaseCommand {
       c.permissionOverwrites.edit(member.id, {
         ViewChannel: true,
       });
+
+      await sendValidEmbedWithCountdown(interaction, [
+        "Membre ajouté au salon.",
+      ]);
     }
   }
 }
