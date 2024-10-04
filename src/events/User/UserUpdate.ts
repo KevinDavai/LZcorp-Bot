@@ -21,6 +21,6 @@ export class UserUpdate extends BaseEvent {
   }
 
   async execute(oldUser: User, newUser: User) {
-    updateUserLogs(this.client, oldUser, newUser);
+    // updateUserLogs(this.client, oldUser, newUser);
   }
 }
