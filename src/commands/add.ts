@@ -18,6 +18,7 @@ export class Add extends BaseCommand {
     super(client, {
       data: new SlashCommandBuilder()
         .setName("add")
+        .setDescription("Ajouter un role ou un membre à un salon")
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addSubcommand((subcommand) =>
           subcommand
