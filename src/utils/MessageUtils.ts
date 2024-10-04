@@ -221,10 +221,10 @@ export async function getOrFetchMemberById(
       if (fetchedMember) {
         member = fetchedMember;
       } else {
-        Logger.error(Logs.error.memberByIdNotFound, memberId);
+        return undefined;
       }
     } catch (error) {
-      Logger.error(Logs.error.fetchMemberById, memberId, error);
+      return undefined;
     }
   }
 

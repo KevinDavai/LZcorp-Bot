@@ -170,13 +170,6 @@ export class BlackList extends BaseCommand {
       return;
     }
 
-    if (!member) {
-      await sendErrorEmbedWithCountdown(interaction, [
-        "L'utilisateur n'est pas membre du serveur.",
-      ]);
-      return;
-    }
-
     const blacklistEmbed = new EmbedBuilder()
       .setTitle(`🔒 | Blacklist de ${user.displayName}`)
       .addFields([
@@ -201,14 +194,16 @@ export class BlackList extends BaseCommand {
       msgId = msg.id;
     });
 
-    member.roles.add(blacklistRole);
-    await setBlackListedStatus(
-      user.id,
-      interaction.guild!.id,
-      true,
-      raison,
-      msgId,
-    );
+    if (member) {
+      member.roles.add(blacklistRole);
+      await setBlackListedStatus(
+        user.id,
+        interaction.guild!.id,
+        true,
+        raison,
+        msgId,
+      );
+    }
 
     await sendValidEmbedWithCountdown(interaction, [
       `L'utilisateur ${user.displayName} a été ajouté à la blacklist.`,

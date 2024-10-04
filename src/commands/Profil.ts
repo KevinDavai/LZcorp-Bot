@@ -592,7 +592,7 @@ export class Profil extends BaseCommand {
 
     await sendValidEmbedWithCountdown(interaction, [
       "Profil créé avec succès.",
-      "Vous pouvez le consulter avec /prestataire <utilisateur>",
+      "Vous pouvez le consulter avec /prestataire show <utilisateur>",
     ]);
 
     this.clearProfilCreator(interaction, interaction.client as CustomClient);

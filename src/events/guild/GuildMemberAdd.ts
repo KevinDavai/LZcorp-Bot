@@ -5,6 +5,8 @@ import { CustomInvite, InviteModel } from "database/models/InviteModel";
 import { getGuildInvites } from "database/utils/InviteUtils";
 import { inviteModule } from "modules/InvitesModule";
 import { guildMemberJoinLogs } from "modules/LogsModule";
+import { getOrFetchRoleById } from "utils/MessageUtils";
+import { getUserById } from "database/utils/UserUtils";
 import { CustomClient } from "../../structures/CustomClient";
 import { BaseEvent } from "../../structures/BaseEvent";
 
@@ -19,6 +21,18 @@ export class GuildMemberAdd extends BaseEvent {
 
   async execute(member: GuildMember) {
     const guildSettings = await getGuildSettings(member.guild.id);
+
+    const user = await getUserById(member.user.id, member.guild.id);
+    if (user && user.isBlackListed === true) {
+      const blacklistRole = await getOrFetchRoleById(
+        member.guild!,
+        guildSettings.blacklist_role_id!,
+      );
+
+      if (!blacklistRole) return;
+
+      member.roles.add(blacklistRole);
+    }
 
     guildMemberJoinLogs(this.client, member);
 

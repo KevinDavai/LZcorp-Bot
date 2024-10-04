@@ -144,24 +144,17 @@ export async function setBlackListedStatus(
 }
 
 // Function to add XP and handle leveling up
-export async function addXP(
-  userDetail: CustomUser,
-  xpToAdd: number,
-  guild: Guild,
-) {
+export async function addXP(authorId: string, xpToAdd: number, guild: Guild) {
+  const customUser = await getUserById(authorId, guild.id);
+
   const XP_TO_LEVEL_UP = (level: number) => Math.round(20 * level + 50);
   const XP_COOLDOWN = 30000; // Temps en millisecondes (ex: 60000ms = 1 minute)
-
-  const customUser = userDetail;
 
   // Vérifier le cooldown
   const now = new Date().getTime();
   const lastXP = customUser.lastXP ? new Date(customUser.lastXP).getTime() : 0;
 
-  if (
-    now - lastXP < XP_COOLDOWN &&
-    userDetail.userId !== "644117619514802177"
-  ) {
+  if (now - lastXP < XP_COOLDOWN) {
     return; // Empêche l'ajout d'XP si l'utilisateur essaie de gagner XP trop rapidement
   }
 
@@ -173,15 +166,12 @@ export async function addXP(
 
   const xpRequired = XP_TO_LEVEL_UP(customUser.level);
 
-  let levelUp = false;
-
   if (customUser.xp >= xpRequired) {
     // Le niveau augmente
-    levelUp = true;
     customUser.level += 1;
     customUser.xp = 0; // Remise à zéro de l'XP après le niveau
 
-    // Optionnellement, donner un rôle au membre
+    await handleLevelUp(guild.client as CustomClient, guild, customUser);
   }
 
   // Sauvegarde dans la DB
@@ -193,10 +183,6 @@ export async function addXP(
   // Optionnellement, mettre à jour le cache
   const cacheKey = `${customUser.userId}-${customUser.guildId}`;
   userCache.set(cacheKey, customUser);
-
-  if (levelUp) {
-    await handleLevelUp(guild.client as CustomClient, guild, customUser);
-  }
 }
 
 // Fonction pour envoyer un message de notification dans le canal de niveau
