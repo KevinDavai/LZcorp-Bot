@@ -392,7 +392,6 @@ export function updateUserLogs(
       if (newUser.id === member.id) {
         if (!isLogsEnabled(guild.id)) return;
         // let member = bot.guilds.get(guildid).members.get(member.id)
-        console.log(oldUser.displayName, newUser.displayName);
         // USERNAME CHANGED V14
         if (oldUser.displayName !== newUser.displayName) {
           usernameChangedMsg = {
