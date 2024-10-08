@@ -83,7 +83,10 @@ async function createBasicTicket(interaction: StringSelectMenuInteraction) {
   const permissionOverwrites: OverwriteResolvable[] = [
     {
       id: member.id,
-      allow: [PermissionFlagsBits.ViewChannel],
+      allow: [
+        PermissionFlagsBits.ViewChannel,
+        PermissionFlagsBits.SendMessages,
+      ],
     },
     {
       id: interaction.guild!.id,
@@ -95,7 +98,10 @@ async function createBasicTicket(interaction: StringSelectMenuInteraction) {
   if (guildSettings.ticket_role_id) {
     permissionOverwrites.push({
       id: guildSettings.ticket_role_id,
-      allow: [PermissionFlagsBits.ViewChannel],
+      allow: [
+        PermissionFlagsBits.ViewChannel,
+        PermissionFlagsBits.SendMessages,
+      ],
     });
   }
 
@@ -168,7 +174,10 @@ async function createTicketLZCorpCommande(
   const permissionOverwrites: OverwriteResolvable[] = [
     {
       id: member.id,
-      allow: [PermissionFlagsBits.ViewChannel],
+      allow: [
+        PermissionFlagsBits.ViewChannel,
+        PermissionFlagsBits.SendMessages,
+      ],
     },
     {
       id: interaction.guild!.id,
@@ -180,7 +189,10 @@ async function createTicketLZCorpCommande(
   if (guildSettings.ticket_role_id) {
     permissionOverwrites.push({
       id: guildSettings.ticket_role_id,
-      allow: [PermissionFlagsBits.ViewChannel],
+      allow: [
+        PermissionFlagsBits.ViewChannel,
+        PermissionFlagsBits.SendMessages,
+      ],
     });
   }
 
