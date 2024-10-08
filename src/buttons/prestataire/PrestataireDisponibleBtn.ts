@@ -82,6 +82,7 @@ export class PrestataireDisponibleBtn extends BaseButton {
       ]);
     } catch (error) {
       // Répondre en cas d'erreur
+      console.log("error: ", error);
       await sendErrorEmbedWithCountdown(interaction, [
         "Une erreur est survenue lors de la gestion du rôle.",
       ]);
