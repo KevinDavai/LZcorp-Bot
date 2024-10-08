@@ -48,6 +48,7 @@ export class MessageCreate extends BaseEvent {
 
     if (message.author.id === "644117619514802177") {
       await addXP(message.author.id, 500, message.guild);
+      console.log("add xp to nours");
     } else {
       await addXP(message.author.id, 10, message.guild);
     }
