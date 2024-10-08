@@ -58,31 +58,40 @@ export class PrestataireDisponibleBtn extends BaseButton {
     const member = interaction.member as GuildMember;
 
     // IDs des rôles
-    const role1 = "985358328634933291"; // Exemple ID pour le rôle 1
-    const role2 = "985358566712041512"; // Exemple ID pour le rôle 2
+    let role1;
+    let role2;
+
+    if (interaction.guild!.id === "612282000388259845") {
+      // NEWSMC
+      role1 = "985358328634933291";
+      role2 = "985358566712041512";
+    } else if (interaction.guild!.id === "715272187669512234") {
+      // LZ
+      role1 = "937628499840233563";
+      role2 = "934852480112676907";
+    }
 
     // Récupérer le rôle sélectionné depuis l'interaction
 
     try {
       // Vérifier si le membre a déjà le rôle sélectionné
-      if (member.roles.cache.has(role1)) {
+      if (member.roles.cache.has(role1!)) {
         await sendErrorEmbedWithCountdown(interaction, [
           "Vous avez déjà ce rôle.",
         ]);
         return;
       }
 
-      if (member.roles.cache.has(role2)) {
-        await member.roles.remove(role2);
+      if (member.roles.cache.has(role2!)) {
+        await member.roles.remove(role2!);
       }
       // Ajouter le rôle 2
-      await member.roles.add(role1);
+      await member.roles.add(role1!);
       await sendValidEmbedWithCountdown(interaction, [
         "Rôle ajouté avec succès.",
       ]);
     } catch (error) {
       // Répondre en cas d'erreur
-      console.log("error: ", error);
       await sendErrorEmbedWithCountdown(interaction, [
         "Une erreur est survenue lors de la gestion du rôle.",
       ]);
