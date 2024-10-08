@@ -194,8 +194,6 @@ async function sendLevelUpNotification(
 ) {
   const channel = await getOrFetchChannelById(client, channelId);
 
-  console.log(userId);
-
   if (channel && channel.isTextBased()) {
     const levelUpEmbed = new EmbedBuilder()
       .setTitle("🔔 | Notification - LevelUp !")
