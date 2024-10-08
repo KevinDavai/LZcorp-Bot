@@ -48,6 +48,7 @@ export class ButtonEvent extends BaseEvent {
     }
 
     if (btn.roles && btn.roles.length > 0) {
+      console.log("test");
       if (
         !interaction.member.roles.cache.some((role) =>
           btn.roles!.includes(role.id),
