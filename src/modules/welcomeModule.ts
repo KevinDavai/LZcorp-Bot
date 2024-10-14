@@ -41,7 +41,7 @@ export async function sendWelcomeEmbed(
           ➜ Pour avoir nos prix <#1192845767539441825>`,
         )
         .setFooter({
-          text: "© Copyright | LZCorp",
+          text: `© Copyright ${process.env.SERVER_NAME}`,
           iconURL: member.client.user.displayAvatarURL(),
         })
         .setColor("#87CEFA");
@@ -58,7 +58,7 @@ export async function sendWelcomeEmbed(
         ➜ Pour voir notre règlement > <#931913719557025843>`,
         )
         .setFooter({
-          text: "© Copyright | NewsMC",
+          text: `© Copyright ${process.env.SERVER_NAME}`,
           iconURL: member.client.user.displayAvatarURL(),
         })
         .setColor("#87CEFA");
@@ -75,7 +75,7 @@ export async function sendWelcomeEmbed(
           ➜ Pour voir notre règlement > <#931913719557025843>`,
         )
         .setFooter({
-          text: "© Copyright | NewsMC",
+          text: `© Copyright ${process.env.SERVER_NAME}`,
           iconURL: member.client.user.displayAvatarURL(),
         })
         .setColor("#87CEFA");

@@ -99,7 +99,7 @@ export class AvisNewsMc extends BaseCommand {
       )
       .setColor("#87CEFA") // Couleur verte
       .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
+        text: `© Copyright ${process.env.SERVER_NAME}`,
         iconURL: interaction.client.user.displayAvatarURL(),
       });
 

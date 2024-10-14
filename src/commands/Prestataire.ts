@@ -164,7 +164,7 @@ export class Prestataire extends BaseCommand {
       .setTitle("📝 | Prestataires disponibles")
       .setColor("#87CEFA")
       .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
+        text: `© Copyright ${process.env.SERVER_NAME}`,
         iconURL: interaction.client.user.displayAvatarURL(),
       });
 
@@ -179,7 +179,7 @@ export class Prestataire extends BaseCommand {
             .setTitle("📝 | Prestataires disponibles")
             .setColor("#87CEFA")
             .setFooter({
-              text: "© Copyright LZCorp | NewsMC",
+              text: `© Copyright ${process.env.SERVER_NAME}`,
               iconURL: interaction.client.user.displayAvatarURL(),
             });
           userCount = 0; // Réinitialiser le compteur d'utilisateurs

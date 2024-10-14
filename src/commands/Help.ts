@@ -57,7 +57,7 @@ export class Help extends BaseCommand {
         .setDescription(data.description)
         .setColor("#87CEFA")
         .setFooter({
-          text: "© Copyright LZCorp | NewsMC",
+          text: `© Copyright ${process.env.SERVER_NAME}`,
           iconURL: interaction.client.user.displayAvatarURL(),
         });
 
@@ -201,7 +201,7 @@ export class Help extends BaseCommand {
       .setDescription("Voici la liste des commandes disponibles :")
       .setColor("#87CEFA")
       .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
+        text: `© Copyright ${process.env.SERVER_NAME}`,
         iconURL: interaction.client.user.displayAvatarURL(),
       });
 

@@ -97,7 +97,7 @@ export class AvisLz extends BaseCommand {
       )
       .setColor("#87CEFA")
       .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
+        text: `© Copyright ${process.env.SERVER_NAME}`,
         iconURL: interaction.client.user.displayAvatarURL(),
       });
 

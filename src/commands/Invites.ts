@@ -34,8 +34,6 @@ export class Invites extends BaseCommand {
 
     const userInvites = await getAllInviteByUser(user.id);
 
-    console.log(userInvites);
-
     // Calcul du total des utilisateurs invités
     const totalInvitedUser = userInvites.reduce(
       (total, invite) => total + invite.uses,
@@ -58,7 +56,7 @@ export class Invites extends BaseCommand {
       )
       .setColor("#87CEFA")
       .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
+        text: `© Copyright ${process.env.SERVER_NAME}`,
         iconURL: interaction.client.user.displayAvatarURL(),
       })
       .setTimestamp();

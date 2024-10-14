@@ -127,7 +127,7 @@ export async function generateProfiles() {
       )
       .setColor(16777215)
       .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
+        text: `© Copyright ${process.env.SERVER_NAME}`,
         iconURL: "https://cdn.discordapp.com/embed/avatars/0.png",
       })
       .setTimestamp(new Date());

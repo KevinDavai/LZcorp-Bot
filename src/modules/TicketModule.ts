@@ -249,7 +249,7 @@ async function postEmbedInTicket(
           `Bonjour ${member.user.username}, votre ticket a été créé avec succès.`,
         )
         .setFooter({
-          text: "© LZCorp | NewsMC",
+          text: `© Copyright ${process.env.SERVER_NAME}`,
           iconURL: ticketChannel.client.user.displayAvatarURL(),
         })
         .setColor("#87CEFA"),
@@ -393,7 +393,7 @@ export async function closeTicket(
         )
         .addFields(embedFields)
         .setFooter({
-          text: "© LZCorp | NewsMC",
+          text: `© Copyright ${process.env.SERVER_NAME}`,
           iconURL: interaction.client.user.displayAvatarURL(),
         })
         .setTimestamp()
@@ -454,7 +454,7 @@ export async function setupEmbedTicket(
         "Si vous avez des questions ou que vous souhaitez occuper un poste spécifique chez NewsMC, Veuillez ouvrir un ticket à l'aide du menu déroulant ci-dessous.",
       )
       .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
+        text: `© Copyright ${process.env.SERVER_NAME}`,
         iconURL: interaction.client.user.displayAvatarURL(),
       })
       .setColor("#87CEFA");
@@ -509,7 +509,7 @@ export async function setupEmbedTicket(
         "Choissisez l'option souhaitée, en fonction de ce que vous recherchez, nous nous engageons à vous répondre le plus vite possible",
       )
       .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
+        text: `© Copyright ${process.env.SERVER_NAME}`,
         iconURL: interaction.client.user.displayAvatarURL(),
       })
       .setColor("#87CEFA");
@@ -533,6 +533,11 @@ export async function setupEmbedTicket(
           .setDescription("Service de communication")
           .setValue("redaction")
           .setEmoji("📝"),
+        new StringSelectMenuOptionBuilder()
+          .setLabel("Artistique")
+          .setDescription("Service artistique")
+          .setValue("artistique")
+          .setEmoji("🎨"),
       );
 
     row.addComponents(select);
@@ -554,7 +559,7 @@ export async function setupEmbedTicket(
         "Choissisez l'option souhaitée, en fonction de ce que vous recherchez, nous nous obligeons de vous répondre le plus vite possible",
       )
       .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
+        text: `© Copyright ${process.env.SERVER_NAME}`,
         iconURL: interaction.client.user.displayAvatarURL(),
       })
       .setColor("#87CEFA");

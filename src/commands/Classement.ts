@@ -40,7 +40,7 @@ export class Classement extends BaseCommand {
       .setTitle(`Classement global des invitations`)
       .setColor("#87CEFA")
       .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
+        text: `© Copyright ${process.env.SERVER_NAME}`,
         iconURL: interaction.client.user.displayAvatarURL(),
       })
       .setTimestamp();

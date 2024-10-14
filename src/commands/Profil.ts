@@ -627,7 +627,7 @@ export class Profil extends BaseCommand {
         )
         .setColor(0xffffff)
         .setFooter({
-          text: "© Copyright LZCorp | NewsMC",
+          text: `© Copyright ${process.env.SERVER_NAME}`,
         })
         .setTimestamp(Date.now());
     }
@@ -658,7 +658,7 @@ export class Profil extends BaseCommand {
       )
       .setColor(0xffffff)
       .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
+        text: `© Copyright ${process.env.SERVER_NAME}`,
         iconURL: interaction?.client.user.displayAvatarURL() ?? "",
       })
       .setTimestamp(Date.now());

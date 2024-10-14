@@ -114,7 +114,7 @@ export class AutoRoleSetup extends BaseCommand {
         "https://cdn.discordapp.com/attachments/772050282057957376/1286355490506412146/lzcorp-icon.jpg?ex=66ed9b68&is=66ec49e8&hm=efdd046218743a99e208e096195cc2b1e227b87f39bb477a9ab5728e77f9c8fd&",
       )
       .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
+        text: `© Copyright ${process.env.SERVER_NAME}`,
         iconURL: interaction.client.user.displayAvatarURL(),
       })
       .setColor("#87CEFA");
@@ -160,7 +160,7 @@ export class AutoRoleSetup extends BaseCommand {
       )
       .setColor("#87CEFA")
       .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
+        text: `© Copyright ${process.env.SERVER_NAME}`,
         iconURL: interaction.client.user.displayAvatarURL(),
       });
 
@@ -194,7 +194,7 @@ export class AutoRoleSetup extends BaseCommand {
       .setTitle("🔎 | Choisissez les rôles que vous désirez")
       .setColor("#87CEFA")
       .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
+        text: `© Copyright ${process.env.SERVER_NAME}`,
         iconURL: interaction.client.user.displayAvatarURL(),
       });
 
@@ -257,7 +257,7 @@ export class AutoRoleSetup extends BaseCommand {
       )
       .setColor("#87CEFA")
       .setFooter({
-        text: "© Copyright LZCorp | NewsMC",
+        text: `© Copyright ${process.env.SERVER_NAME}`,
         iconURL: interaction.client.user.displayAvatarURL(),
       });
 
