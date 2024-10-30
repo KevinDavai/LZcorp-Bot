@@ -35,6 +35,7 @@ export async function antiLinkModule(
     if (channel.parentId && guild.bypass_channels.includes(channel.parentId))
       return false;
   }
+  // test
 
   if (linkRegex.test(message.content.toLowerCase())) {
     try {
