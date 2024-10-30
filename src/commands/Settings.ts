@@ -387,6 +387,7 @@ export class Settings extends BaseCommand {
                     .addChannelTypes(
                       ChannelType.GuildText,
                       ChannelType.GuildCategory,
+                      ChannelType.GuildForum,
                     )
                     .setRequired(true),
                 ),

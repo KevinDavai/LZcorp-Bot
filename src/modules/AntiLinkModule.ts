@@ -17,6 +17,8 @@ export async function antiLinkModule(
   // The warning will be sent in the form of a direct message.
   const member = await getOrFetchMemberById(message.guild!, message.author.id);
 
+  const { channel } = message;
+
   if (member) {
     if (
       member.roles.cache.some((role) => guild.bypass_roles.includes(role.id))
@@ -25,12 +27,12 @@ export async function antiLinkModule(
     }
   }
 
-  if (guild.bypass_channels.includes(message.channel.id)) return false;
-  if (message.channel.type === ChannelType.GuildText) {
-    if (
-      message.channel.parentId &&
-      guild.bypass_channels.includes(message.channel.parentId)
-    )
+  if (guild.bypass_channels.includes(channel.id)) return false;
+  if (
+    channel.type === ChannelType.GuildText ||
+    channel.type === ChannelType.PublicThread
+  ) {
+    if (channel.parentId && guild.bypass_channels.includes(channel.parentId))
       return false;
   }
 
