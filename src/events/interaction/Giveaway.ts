@@ -49,14 +49,27 @@ export class GiveawayReactionEvent extends BaseEvent {
       userInteraction.id,
     );
 
-    if (!giveaway) return;
+    if (!giveaway) {
+      console.error("Failed to retrieve giveaway data");
+      return;
+    }
 
-    await addParticipantGiveawayEmbed(guild, giveaway);
+    try {
+      // Met à jour l'embed
+      await addParticipantGiveawayEmbed(guild, giveaway);
 
-    console.log("interact " + interaction.toJSON());
+      // Confirme la participation à l'utilisateur
+      await sendValidEmbedWithCountdown(interaction, [
+        "Vous avez bien participé au giveaway !",
+      ]);
+    } catch (error) {
+      console.error("An error occurred during interaction execution:", error);
 
-    await sendValidEmbedWithCountdown(interaction, [
-      "Vous avez bien participé au giveaway !",
-    ]);
+      if (interaction) {
+        await sendErrorEmbedWithCountdown(interaction, [
+          "Une erreur est survenue, veuillez réessayer plus tard.",
+        ]);
+      }
+    }
   }
 }
