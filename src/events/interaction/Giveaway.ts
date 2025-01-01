@@ -28,8 +28,6 @@ export class GiveawayReactionEvent extends BaseEvent {
   async execute(interaction: Interaction) {
     if (!interaction.isButton()) return;
 
-    interaction.deferReply();
-
     const buttonId = interaction.customId;
 
     if (!buttonId.startsWith("giveaway-")) return; // This is not a giveaway btn
@@ -45,6 +43,11 @@ export class GiveawayReactionEvent extends BaseEvent {
       return;
     }
 
+    // Confirme la participation à l'utilisateur
+    await sendValidEmbedWithCountdown(interaction, [
+      "Vous avez bien participé au giveaway !",
+    ]);
+
     const giveaway = await addParticipant(
       giveawayId,
       guild.id,
@@ -52,26 +55,9 @@ export class GiveawayReactionEvent extends BaseEvent {
     );
 
     if (!giveaway) {
-      console.error("Failed to retrieve giveaway data");
       return;
     }
 
-    try {
-      // Met à jour l'embed
-      await addParticipantGiveawayEmbed(guild, giveaway);
-
-      // Confirme la participation à l'utilisateur
-      await sendValidEmbedWithCountdown(interaction, [
-        "Vous avez bien participé au giveaway !",
-      ]);
-    } catch (error) {
-      console.error("An error occurred during interaction execution:", error);
-
-      if (interaction) {
-        await sendErrorEmbedWithCountdown(interaction, [
-          "Une erreur est survenue, veuillez réessayer plus tard.",
-        ]);
-      }
-    }
+    await addParticipantGiveawayEmbed(guild, giveaway);
   }
 }
