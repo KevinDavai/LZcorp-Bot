@@ -28,7 +28,7 @@ export class GiveawayReactionEvent extends BaseEvent {
   async execute(interaction: Interaction) {
     if (!interaction.isButton()) return;
 
-    interaction.deferUpdate();
+    interaction.deferReply();
 
     const buttonId = interaction.customId;
 
