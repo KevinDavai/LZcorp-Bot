@@ -91,9 +91,7 @@ export async function sendValidEmbedWithCountdown(
       value: `\n ${messages.join("\n")}`,
     });
 
-  if (interaction.deferred) {
-    await interaction.followUp({ embeds: [validEmbed], ephemeral: true });
-  } else if (edit) {
+  if (edit) {
     await interaction.editReply({ embeds: [validEmbed], components: [] });
   } else {
     await interaction.reply({ embeds: [validEmbed], ephemeral: true });
