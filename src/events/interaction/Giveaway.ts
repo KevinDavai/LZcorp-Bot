@@ -28,6 +28,8 @@ export class GiveawayReactionEvent extends BaseEvent {
   async execute(interaction: Interaction) {
     if (!interaction.isButton()) return;
 
+    interaction.deferUpdate();
+
     const buttonId = interaction.customId;
 
     if (!buttonId.startsWith("giveaway-")) return; // This is not a giveaway btn
