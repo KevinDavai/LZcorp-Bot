@@ -53,6 +53,8 @@ export class GiveawayReactionEvent extends BaseEvent {
 
     await addParticipantGiveawayEmbed(guild, giveaway);
 
+    console.log("interact " + interaction.toJSON());
+
     await sendValidEmbedWithCountdown(interaction, [
       "Vous avez bien participé au giveaway !",
     ]);
