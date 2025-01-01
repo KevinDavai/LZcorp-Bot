@@ -101,8 +101,13 @@ export async function sendValidEmbedWithCountdown(
     countdown -= 1;
     if (countdown <= 0) {
       clearInterval(interval);
+
+      if (interaction == null) return;
+
       await interaction.deleteReply();
     } else {
+      if (interaction == null) return;
+
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
