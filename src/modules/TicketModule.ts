@@ -101,6 +101,8 @@ async function createBasicTicket(interaction: StringSelectMenuInteraction) {
       allow: [
         PermissionFlagsBits.ViewChannel,
         PermissionFlagsBits.SendMessages,
+        PermissionFlagsBits.AttachFiles,
+        PermissionFlagsBits.ReadMessageHistory,
       ],
     });
   }
