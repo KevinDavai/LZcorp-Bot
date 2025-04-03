@@ -86,6 +86,9 @@ async function createBasicTicket(interaction: StringSelectMenuInteraction) {
       allow: [
         PermissionFlagsBits.ViewChannel,
         PermissionFlagsBits.SendMessages,
+        PermissionFlagsBits.AttachFiles,
+        PermissionFlagsBits.ReadMessageHistory,
+        PermissionFlagsBits.EmbedLinks,
       ],
     },
     {
@@ -103,6 +106,7 @@ async function createBasicTicket(interaction: StringSelectMenuInteraction) {
         PermissionFlagsBits.SendMessages,
         PermissionFlagsBits.AttachFiles,
         PermissionFlagsBits.ReadMessageHistory,
+        PermissionFlagsBits.EmbedLinks,
       ],
     });
   }
@@ -179,6 +183,9 @@ async function createTicketLZCorpCommande(
       allow: [
         PermissionFlagsBits.ViewChannel,
         PermissionFlagsBits.SendMessages,
+        PermissionFlagsBits.AttachFiles,
+        PermissionFlagsBits.ReadMessageHistory,
+        PermissionFlagsBits.EmbedLinks,
       ],
     },
     {
@@ -194,6 +201,9 @@ async function createTicketLZCorpCommande(
       allow: [
         PermissionFlagsBits.ViewChannel,
         PermissionFlagsBits.SendMessages,
+        PermissionFlagsBits.AttachFiles,
+        PermissionFlagsBits.ReadMessageHistory,
+        PermissionFlagsBits.EmbedLinks,
       ],
     });
   }
